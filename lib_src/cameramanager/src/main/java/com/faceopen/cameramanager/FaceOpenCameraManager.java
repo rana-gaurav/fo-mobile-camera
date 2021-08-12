@@ -128,8 +128,8 @@ public class FaceOpenCameraManager {
         });
     }
 
-    public void setFrameDelay(int newfFrameTime){
-        frameTime = newfFrameTime;
+    public void setFrameDelay(int newFrameTime){
+        frameTime = newFrameTime;
     }
 
     public long getFrameDelayTime(){
