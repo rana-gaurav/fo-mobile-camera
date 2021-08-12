@@ -6,20 +6,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
-import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -41,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         b1 = (Button)findViewById(R.id.button_capture) ;
         ivPreview = (ImageView)findViewById(R.id.iv_preview) ;
         if (checkCameraPermission()) {
-           initCameraProcess();
+            startCamera();
         } else {
             requestPermission();
         }
@@ -61,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             case REQUEST_CAMERA_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(getApplicationContext(), "Permission Granted", Toast.LENGTH_SHORT).show();
-                    initCameraProcess();
+                    startCamera();
                 } else {
                     Toast.makeText(getApplicationContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -75,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                                                 requestPermission();
                                             }
                                         }
-                                    });
+                            });
                         }
                     }
                 }
@@ -83,10 +76,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initCameraProcess(){
+    private void startCamera(){
         FaceOpenCameraManager.getInstance().init(this);
-        FaceOpenCameraManager.getInstance().setFrameDelay(2000);
+        FaceOpenCameraManager.getInstance().setFrameDelay(500);
         FaceOpenCameraManager.getInstance().startPreView(findViewById(R.id.camera_preview));
+        FaceOpenCameraManager.getInstance().captureFrames();
     }
 
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {

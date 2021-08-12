@@ -1,10 +1,6 @@
 package com.faceopen.cameramanager;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -14,16 +10,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class FaceOpenCameraManager {
-
     private Bitmap bitmap;
     private Camera mCamera;
     private CameraPreview mPreview;
@@ -54,7 +44,7 @@ public class FaceOpenCameraManager {
 
 
     public CameraStatusCode deinit() throws CameraException {
-        return  setModuleStatus(CameraStatusCode.CAMERA_DEINIT_SUCCESS);
+        return setModuleStatus(CameraStatusCode.CAMERA_DEINIT_SUCCESS);
     }
 
     private Context getContext() {
@@ -90,7 +80,6 @@ public class FaceOpenCameraManager {
         mPreview = new CameraPreview(instance.mContext, mCamera);
         //FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         camera_preview.addView(mPreview);
-        captureFrames();
     }
 
     public static Camera getCameraInstance (Context context){
@@ -104,7 +93,7 @@ public class FaceOpenCameraManager {
     }
 
 
-    private void captureFrames(){
+    public void captureFrames(){
         mCamera.setPreviewCallback(new Camera.PreviewCallback() {
             @Override
             public void onPreviewFrame(byte[] bytes, Camera camera) {
