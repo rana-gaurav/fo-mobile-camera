@@ -1,6 +1,7 @@
 package top.defaults.camera;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 
@@ -18,6 +19,7 @@ class CallbackHandler extends Handler {
     private static final int CALLBACK_ON_FINISH_RECORDING = 6;
     private static final int CALLBACK_ON_SHOT_FINISHED = 7;
     private static final int CALLBACK_ON_ERROR = 8;
+    private static final int CALLBACK_RECEIVE_FRAME = 9;
 
     private Photographer.OnEventListener onEventListener;
 
@@ -62,6 +64,9 @@ class CallbackHandler extends Handler {
             case CALLBACK_ON_ERROR:
                 onEventListener.onError((Error) msg.obj);
                 break;
+            case CALLBACK_RECEIVE_FRAME:
+                onEventListener.receiveFrame((Bitmap) msg.obj, (int) msg.obj, (int) msg.obj);
+                break;
             default:
                 break;
         }
@@ -97,5 +102,9 @@ class CallbackHandler extends Handler {
 
     void onError(final Error error) {
         Message.obtain(this, CALLBACK_ON_ERROR, error).sendToTarget();
+    }
+
+    void onReceivedFrame(Bitmap bitmap, int format, int width, int height) {
+        Message.obtain(this, CALLBACK_RECEIVE_FRAME, bitmap, format, width, height).sendToTarget();
     }
 }

@@ -6,9 +6,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
+import android.graphics.YuvImage;
+import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -19,6 +23,7 @@ import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
@@ -32,7 +37,9 @@ import android.view.Surface;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -188,6 +195,35 @@ public class Camera2Photographer implements InternalPhotographer {
 
         @Override
         public void onImageAvailable(ImageReader reader) {
+            Image image = reader.acquireLatestImage();
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+            byte[] bytes = new byte[buffer.remaining()];
+            buffer.get(bytes);
+
+            YuvImage yuvImage = new YuvImage(bytes, reader.getImageFormat(), reader.getWidth(), reader.getHeight(), null);
+            yuvImage.compressToJpeg(new Rect(0, 0, reader.getWidth(), reader.getHeight()), 100, out);
+            byte[] imageBytes = out.toByteArray();
+            Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+            try {
+                out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            callbackHandler.onReceivedFrame(bitmap,reader.getImageFormat(), reader.getWidth(), reader.getHeight() );
+//            try {
+//                save(bytes, file);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+            image.close();
+
             backgroundHandler.post(new ImageSaver(reader.acquireLatestImage(), nextImageAbsolutePath));
         }
 
@@ -430,16 +466,19 @@ public class Camera2Photographer implements InternalPhotographer {
     private void startOpeningCamera() {
         try {
             cameraManager.openCamera(cameraId, cameraDeviceCallback, null);
+
         } catch (CameraAccessException e) {
             callbackHandler.onError(new Error(Error.ERROR_CAMERA, "Failed to open camera: " + cameraId, e));
         }
     }
+
 
     @Override
     public void restartPreview() {
         if (isPreviewStarted) {
             stopPreview();
             startPreview();
+
         }
     }
 

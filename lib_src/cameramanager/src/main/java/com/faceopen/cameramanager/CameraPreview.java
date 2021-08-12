@@ -3,8 +3,10 @@ package com.faceopen.cameramanager;
 import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.FrameLayout;
 
 import java.io.IOException;
 
@@ -38,35 +40,63 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
+        mCamera.release();
         // empty. Take care of releasing the Camera preview in your activity.
     }
 
-    public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-        // If your preview can change or rotate, take care of those events here.
-        // Make sure to stop the preview before resizing or reformatting it.
+//    public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+//        // If your preview can change or rotate, take care of those events here.
+//        // Make sure to stop the preview before resizing or reformatting it.
+//
+//        if (mHolder.getSurface() == null){
+//            // preview surface does not exist
+//            return;
+//        }
+//
+//        // stop preview before making changes
+//        try {
+//            mCamera.stopPreview();
+//        } catch (Exception e){
+//            // ignore: tried to stop a non-existent preview
+//        }
+//
+//        // set preview size and make any resize, rotate or
+//        // reformatting changes here
+//
+//        // start preview with new settings
+//        try {
+//            mCamera.setPreviewDisplay(mHolder);
+//            mCamera.startPreview();
+//
+//        } catch (Exception e){
+//            Log.d(TAG, "Error starting camera preview: " + e.getMessage());
+//        }
+//    }
 
-        if (mHolder.getSurface() == null){
-            // preview surface does not exist
-            return;
+    @Override public void surfaceChanged(SurfaceHolder holder,
+                                         int format, int w, int h) {
+
+        cameraSetup(w, h);
+    }
+
+    private void cameraSetup(int w, int h) {
+        // set the camera parameters, including the preview size
+
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) getLayoutParams();
+        double cameraAspectRatio = ((double)2)/1;
+
+        if (((double)h)/w > cameraAspectRatio) {
+            lp.width = (int)(h/cameraAspectRatio+0.5);
+            lp.height = h;
         }
-
-        // stop preview before making changes
-        try {
-            mCamera.stopPreview();
-        } catch (Exception e){
-            // ignore: tried to stop a non-existent preview
+        else {
+            lp.height = (int)(w*cameraAspectRatio + 0.5);
+            lp.width = w;
+            lp.topMargin = (h - lp.height)/2;
         }
+        lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
 
-        // set preview size and make any resize, rotate or
-        // reformatting changes here
-
-        // start preview with new settings
-        try {
-            mCamera.setPreviewDisplay(mHolder);
-            mCamera.startPreview();
-
-        } catch (Exception e){
-            Log.d(TAG, "Error starting camera preview: " + e.getMessage());
-        }
+        setLayoutParams(lp);
+        requestLayout();
     }
 }

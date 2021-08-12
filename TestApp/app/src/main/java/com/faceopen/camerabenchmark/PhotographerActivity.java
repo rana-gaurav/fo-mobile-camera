@@ -1,5 +1,6 @@
 package com.faceopen.camerabenchmark;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -190,8 +191,7 @@ public class PhotographerActivity extends AppCompatActivity {
         photographerHelper.switchMode();
     }
 
-    @OnClick(R.id.flip)
-    void flip() {
+    void flip(View view) {
         photographerHelper.flip();
     }
 
@@ -293,6 +293,11 @@ public class PhotographerActivity extends AppCompatActivity {
             public void onError(Error error) {
                 Timber.e("Error happens: %s", error.getMessage());
             }
+
+            @Override
+            public void receiveFrame(Bitmap bitmap, int imageWidth, int imageHeight) {
+
+            }
         });
     }
 
@@ -300,6 +305,9 @@ public class PhotographerActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         enterFullscreen();
+        photographerHelper.switchMode();
+        preview.setFillSpace(true);
+        photographerHelper.flip();
         photographer.startPreview();
     }
 

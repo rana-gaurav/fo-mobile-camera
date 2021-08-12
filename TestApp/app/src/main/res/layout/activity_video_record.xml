@@ -138,6 +138,7 @@
 
         <ImageButton
             android:id="@+id/flip"
+            android:onClick="flip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"

@@ -1,5 +1,6 @@
 package top.defaults.camera;
 
+import android.graphics.Bitmap;
 import android.media.MediaRecorder;
 
 import androidx.annotation.Nullable;
@@ -126,5 +127,7 @@ public interface Photographer {
         void onShotFinished(String filePath);
 
         void onError(Error error);
+
+        void receiveFrame(Bitmap bitmap, int imageWidth, int imageHeight);
     }
 }
