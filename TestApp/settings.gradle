@@ -4,3 +4,6 @@ rootProject.name = "Camera Benchmark"
 include ':cameramanager'
 project(':cameramanager').projectDir = new File('../../fo-mobile-camera/lib_src/cameramanager')
 
+include ':camera'
+project(':camera').projectDir = new File('../../fo-mobile-camera/lib_src/camera')
+

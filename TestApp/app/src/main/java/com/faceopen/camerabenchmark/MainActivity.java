@@ -1,115 +1,168 @@
 package com.faceopen.camerabenchmark;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.faceopen.cameramanager.CameraCallback;
-import com.faceopen.cameramanager.FaceOpenCameraManager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import com.bumptech.glide.Glide;
+import com.faceopen.camerabenchmark.options.Commons;
+import com.google.android.material.snackbar.Snackbar;
+import com.jakewharton.rxbinding2.view.RxView;
+import com.tbruyelle.rxpermissions2.RxPermissions;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
-    private ImageView ivPreview ;
-    private static final int REQUEST_CAMERA_PERMISSION = 100;
-    private Button b1;
 
+    private View prepareToRecord;
+
+
+    private List<File> mediaFiles = new ArrayList<>();
+    private MediaFileAdapter adapter;
+
+    TextView mediaDir;
+    GridView gallery;
+    @SuppressLint("CheckResult")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        b1 = (Button)findViewById(R.id.button_capture) ;
-        ivPreview = (ImageView)findViewById(R.id.iv_preview) ;
-        if (checkCameraPermission()) {
-            startCamera();
-        } else {
-            requestPermission();
-        }
-        FaceOpenCameraManager.getInstance().registerCallback(new CameraCallback() {
-            @Override
-            public void frameReceived(Bitmap bitmap) {
-                    Log.d("XXX","setImageBitmap");
-                    ivPreview.setImageBitmap(bitmap);
-            }
+        ButterKnife.bind(this);
+
+        mediaDir = findViewById(R.id.media_dir);
+        gallery = findViewById(R.id.gallery);
+        RxPermissions rxPermissions = new RxPermissions(this);
+        prepareToRecord = findViewById(R.id.open_camera);
+        RxView.clicks(prepareToRecord)
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA,
+                        Manifest.permission.RECORD_AUDIO,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                .subscribe(granted -> {
+                    if (granted) {
+                        startVideoRecordActivity();
+                    } else {
+                        Snackbar.make(prepareToRecord, getString(R.string.no_enough_permission), Snackbar.LENGTH_SHORT).setAction("Confirm", null).show();
+                    }
+                });
+
+       // mediaDir.setText(String.format("Media files are saved under:\n%s", Commons.MEDIA_DIR));
+
+        adapter = new MediaFileAdapter(this, mediaFiles);
+        gallery.setAdapter(adapter);
+        gallery.setOnItemClickListener((parent, view, position, id) -> {
+            File file = adapter.getItem(position);
+            playOrViewMedia(file);
         });
     }
 
+    private void startVideoRecordActivity() {
+        Intent intent = new Intent(this, PhotographerActivity.class);
+        startActivity(intent);
+    }
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_CAMERA_PERMISSION:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(getApplicationContext(), "Permission Granted", Toast.LENGTH_SHORT).show();
-                    startCamera();
+    protected void onResume() {
+        super.onResume();
+        File file = new File(Commons.MEDIA_DIR);
+        if (file.isDirectory()) {
+            mediaFiles.clear();
+            File[] files = file.listFiles();
+            Arrays.sort(files, (f1, f2) -> {
+                if (f1.lastModified() - f2.lastModified() == 0) {
+                    return 0;
                 } else {
-                    Toast.makeText(getApplicationContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                                != PackageManager.PERMISSION_GRANTED) {
-                            showMessageOKCancel("You need to allow access permissions",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                requestPermission();
-                                            }
-                                        }
-                            });
-                        }
-                    }
+                    return f1.lastModified() - f2.lastModified() > 0 ? -1 : 1;
                 }
-                break;
+            });
+            mediaFiles.addAll(Arrays.asList(files));
+            adapter.notifyDataSetChanged();
         }
     }
 
-    private void startCamera(){
-        FaceOpenCameraManager.getInstance().init(this);
-        FaceOpenCameraManager.getInstance().setFrameDelay(500);
-        FaceOpenCameraManager.getInstance().startPreView(findViewById(R.id.camera_preview));
-        FaceOpenCameraManager.getInstance().captureFrames();
-    }
-
-    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(MainActivity.this)
-                .setMessage(message)
-                .setPositiveButton("OK", okListener)
-                .setNegativeButton("Cancel", null)
-                .create()
-                .show();
-    }
-
-    public boolean checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
-            return false;
+    private void playOrViewMedia(File file) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uriForFile = FileProvider.getUriForFile(MainActivity.this, getApplicationContext().getPackageName() + ".provider", file);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            uriForFile = Uri.fromFile(file);
         }
-        return true;
+        intent.setDataAndType(uriForFile, isVideo(file) ? "video/mp4" : "image/jpg");
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        PackageManager packageManager = getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+        boolean isIntentSafe = activities.size() > 0;
+
+        if (isIntentSafe) {
+            startActivity(intent);
+        } else {
+            Toast.makeText(MainActivity.this, "No media viewer found", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    public void requestPermission () {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.CAMERA},
-                REQUEST_CAMERA_PERMISSION);
+    private class MediaFileAdapter extends BaseAdapter {
+
+        private List<File> files;
+
+        private Context context;
+
+        MediaFileAdapter(Context c, List<File> files) {
+            context = c;
+            this.files = files;
+        }
+
+        public int getCount() {
+            return files.size();
+        }
+
+        public File getItem(int position) {
+            return files.get(position);
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ImageView imageView;
+            if (convertView == null) {
+                convertView = getLayoutInflater().inflate(R.layout.item_media, parent, false);
+            }
+            imageView = convertView.findViewById(R.id.item_image);
+            View indicator = convertView.findViewById(R.id.item_indicator);
+            File file = getItem(position);
+            if (isVideo(file)) {
+                indicator.setVisibility(View.VISIBLE);
+            } else {
+                indicator.setVisibility(View.GONE);
+            }
+            Glide.with(context).load(file).into(imageView);
+            return convertView;
+        }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        FaceOpenCameraManager.getInstance().deinit();
+    private boolean isVideo(File file) {
+        return file != null && file.getName().endsWith(".mp4");
     }
 }
