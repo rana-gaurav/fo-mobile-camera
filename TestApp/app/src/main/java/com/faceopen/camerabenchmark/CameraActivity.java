@@ -240,11 +240,13 @@ public class CameraActivity extends AppCompatActivity {
         FaceOpenCameraManager.getInstance().registerCallback(new CameraCallback() {
             @Override
             public void frameReceived(ImageData imageData) {
-                Log.d(TAG,""+imageData.getImageHeight());
-                Log.d(TAG,""+imageData.getImageWidth());
-                Log.d(TAG,""+imageData.getImageFormat());
-                ivPreView.setVisibility(View.VISIBLE);
-                ivPreView.setImageBitmap(imageData.getBitmap());
+                if(imageData != null) {
+                    Log.d(TAG, "" + imageData.getImageHeight());
+                    Log.d(TAG, "" + imageData.getImageWidth());
+                    Log.d(TAG, "" + imageData.getImageFormat());
+                    ivPreView.setVisibility(View.VISIBLE);
+                    ivPreView.setImageBitmap(imageData.getBitmap());
+                }
             }
         });
     }
