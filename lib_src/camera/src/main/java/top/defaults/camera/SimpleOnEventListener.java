@@ -1,5 +1,8 @@
 package top.defaults.camera;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class SimpleOnEventListener implements Photographer.OnEventListener {
     @Override
     public void onDeviceConfigured() {

@@ -5,6 +5,9 @@ import android.media.MediaRecorder;
 
 import androidx.annotation.Nullable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Set;
 
 public interface Photographer {
@@ -110,6 +113,8 @@ public interface Photographer {
 
     void setOnEventListener(OnEventListener listener);
 
+    void setOnDataListener(onDataListener listener);
+
     interface OnEventListener {
 
         void onDeviceConfigured();
@@ -128,6 +133,10 @@ public interface Photographer {
 
         void onError(Error error);
 
-        void receiveFrame(Bitmap bitmap, int imageWidth, int imageHeight);
+
+    }
+
+    interface onDataListener {
+        void onImageDataReceived (ImageData imageData);
     }
 }

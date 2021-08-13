@@ -29,6 +29,7 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.OrientationEventListener;
@@ -36,6 +37,9 @@ import android.view.Surface;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -52,6 +56,8 @@ public class Camera2Photographer implements InternalPhotographer {
     private static final int MAX_VIDEO_SIZE = 3840 * 2160;
 
     private static final SparseIntArray INTERNAL_FACINGS = new SparseIntArray();
+
+    private Photographer.onDataListener onDataListener;
 
     static {
         INTERNAL_FACINGS.put(Values.FACING_BACK, CameraCharacteristics.LENS_FACING_BACK);
@@ -115,6 +121,10 @@ public class Camera2Photographer implements InternalPhotographer {
         RECORD_VIDEO_PERMISSIONS.add(Manifest.permission.CAMERA);
         RECORD_VIDEO_PERMISSIONS.add(Manifest.permission.RECORD_AUDIO);
         RECORD_VIDEO_PERMISSIONS.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    Camera2Photographer(Photographer.onDataListener listener){
+        onDataListener = listener;
     }
 
     private final CameraDevice.StateCallback cameraDeviceCallback
@@ -195,39 +205,52 @@ public class Camera2Photographer implements InternalPhotographer {
 
         @Override
         public void onImageAvailable(ImageReader reader) {
+            Bitmap bitmap = null;
+            Log.d("XXX" , "onImageAvailable");
             Image image = reader.acquireLatestImage();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-
-            YuvImage yuvImage = new YuvImage(bytes, reader.getImageFormat(), reader.getWidth(), reader.getHeight(), null);
-            yuvImage.compressToJpeg(new Rect(0, 0, reader.getWidth(), reader.getHeight()), 100, out);
-            byte[] imageBytes = out.toByteArray();
-            Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
             try {
-                out.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                out.close();
-            } catch (IOException e) {
+                byte[] jpegData = ImageUtil.imageToByteArray(image);
+                bitmap = BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length);
+                ImageData imageData = new ImageData();
+                imageData.setBitmap(bitmap);
+                imageData.setImageFormat(reader.getImageFormat());
+                imageData.setImageWidth(image.getWidth());
+                imageData.setImageHeight(image.getHeight());
+                image.close();
+                onDataListener.onImageDataReceived(imageData);
+                Log.d("XXX" , "onImageAvailableClose");
+            }catch (Exception e){
                 e.printStackTrace();
             }
 
-            callbackHandler.onReceivedFrame(bitmap,reader.getImageFormat(), reader.getWidth(), reader.getHeight() );
-//            try {
-//                save(bytes, file);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-            image.close();
-
-            backgroundHandler.post(new ImageSaver(reader.acquireLatestImage(), nextImageAbsolutePath));
+            //backgroundHandler.post(new ImageSaver(reader.acquireLatestImage(), nextImageAbsolutePath));
         }
 
     };
+
+    private static byte[] YUV_420_888toNV21(Image image) {
+        byte[] nv21;
+        ByteBuffer yBuffer = image.getPlanes()[0].getBuffer();
+        ByteBuffer vuBuffer = image.getPlanes()[2].getBuffer();
+
+        int ySize = yBuffer.remaining();
+        int vuSize = vuBuffer.remaining();
+
+        nv21 = new byte[ySize + vuSize];
+
+        yBuffer.get(nv21, 0, ySize);
+        vuBuffer.get(nv21, ySize, vuSize);
+
+        return nv21;
+    }
+
+    private static byte[] NV21toJPEG(byte[] nv21, int width, int height) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        YuvImage yuv = new YuvImage(nv21, ImageFormat.NV21, width, height, null);
+        yuv.compressToJpeg(new Rect(0, 0, width, height), 100, out);
+        return out.toByteArray();
+    }
+
 
     @Override
     public void initWithViewfinder(Activity activity, CameraView preview) {
@@ -490,7 +513,7 @@ public class Camera2Photographer implements InternalPhotographer {
         }
         throwIfNotInitialized();
         closeCamera();
-        stopBackgroundThread();
+        //stopBackgroundThread();
     }
 
     @Override
@@ -819,12 +842,12 @@ public class Camera2Photographer implements InternalPhotographer {
             return;
         }
 
-        try {
-            nextImageAbsolutePath = Utils.getImageFilePath();
-        } catch (IOException e) {
-            callbackHandler.onError(Utils.errorFromThrowable(e));
-            return;
-        }
+//        try {
+//            nextImageAbsolutePath = Utils.getImageFilePath();
+//        } catch (IOException e) {
+//            callbackHandler.onError(Utils.errorFromThrowable(e));
+//            return;
+//        }
         if (autoFocus) {
             lockFocus();
         } else {
@@ -947,6 +970,12 @@ public class Camera2Photographer implements InternalPhotographer {
         throwIfNotInitialized();
         callbackHandler.setOnEventListener(listener);
     }
+
+    @Override
+    public void setOnDataListener(Photographer.onDataListener listener) {
+
+    }
+
 
     private void lockFocus() {
         previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,

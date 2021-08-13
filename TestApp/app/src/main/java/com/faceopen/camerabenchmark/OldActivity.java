@@ -8,18 +8,15 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.faceopen.cameramanager.CameraCallback;
 import com.faceopen.cameramanager.FaceOpenCameraManager;
 
-public class MainActivity2 extends AppCompatActivity {
+public class OldActivity extends AppCompatActivity {
     private ImageView ivPreview ;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private Button b1;
@@ -27,7 +24,7 @@ public class MainActivity2 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.activity_old);
         b1 = (Button)findViewById(R.id.button_capture) ;
         ivPreview = (ImageView)findViewById(R.id.iv_preview) ;
         if (checkCameraPermission()) {
@@ -35,13 +32,6 @@ public class MainActivity2 extends AppCompatActivity {
         } else {
             requestPermission();
         }
-        FaceOpenCameraManager.getInstance().registerCallback(new CameraCallback() {
-            @Override
-            public void frameReceived(Bitmap bitmap) {
-                    Log.d("XXX","setImageBitmap");
-                    ivPreview.setImageBitmap(bitmap);
-            }
-        });
     }
 
     @Override
@@ -75,13 +65,10 @@ public class MainActivity2 extends AppCompatActivity {
 
     private void startCamera(){
         FaceOpenCameraManager.getInstance().init(this);
-        FaceOpenCameraManager.getInstance().setFrameDelay(500);
-        FaceOpenCameraManager.getInstance().startPreView(findViewById(R.id.camera_preview));
-        FaceOpenCameraManager.getInstance().captureFrames();
     }
 
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(MainActivity2.this)
+        new AlertDialog.Builder(OldActivity.this)
                 .setMessage(message)
                 .setPositiveButton("OK", okListener)
                 .setNegativeButton("Cancel", null)
