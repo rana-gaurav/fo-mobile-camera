@@ -120,14 +120,14 @@
         android:id="@+id/actions_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="#3fffffff">
+        android:layout_alignParentBottom="true">
 
         <top.defaults.view.TextButton
             android:id="@+id/switch_mode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:visibility="gone"
             android:padding="16dp"
             android:textColor="@android:color/white"
             android:text="@string/video_mode" />
@@ -144,6 +144,7 @@
             android:id="@+id/flip"
             android:onClick="flip"
             android:layout_width="wrap_content"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
