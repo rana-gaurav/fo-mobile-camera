@@ -327,7 +327,7 @@ public class Camera2Photographer implements InternalPhotographer {
     }
 
     @Override
-    public Set<Size> getSupportedVideoSizes() {
+    public Set<Size>  getSupportedVideoSizes() {
         return supportedVideoSizes;
     }
 

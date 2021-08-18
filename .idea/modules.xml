@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Camera_Benchmark.iml" filepath="$PROJECT_DIR$/.idea/modules/Camera_Benchmark.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Camera_Benchmark.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Camera_Benchmark.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/877906809/Camera_Benchmark.cameramanager.iml" filepath="$PROJECT_DIR$/.idea/modules/877906809/Camera_Benchmark.cameramanager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fo-mobile-camera.iml" filepath="$PROJECT_DIR$/.idea/modules/fo-mobile-camera.iml" />
     </modules>
   </component>
 </project>
