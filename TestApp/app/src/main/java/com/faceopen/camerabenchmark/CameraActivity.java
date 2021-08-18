@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -254,6 +255,12 @@ public class CameraActivity extends AppCompatActivity {
             mainLayout.setBackgroundColor(R.color.background);
             ivHint.getLayoutParams().height = 1200;
             ivHint.getLayoutParams().width = 1200;
+            //ivHintText.setTextColor(R.color.white);
+           /* getWindow().setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND,
+                    WindowManager.LayoutParams.FLAG_BLUR_BEHIND);*/
+
+           // preview.setAlpha(0.01f);
+
         }else {
             isPreviewZoom = false;
             RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -408,6 +415,7 @@ public class CameraActivity extends AppCompatActivity {
             camAction = "left";
             ivHintText.setText(R.string.face_straight);
             getGifLoadedUsingGlidePreView(R.raw.straight);
+
         }
         if(pose.contentEquals("left")){
             camAction = "right";

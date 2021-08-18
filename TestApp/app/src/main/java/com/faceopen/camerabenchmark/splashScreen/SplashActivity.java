@@ -7,9 +7,7 @@ import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.faceopen.camerabenchmark.CameraActivity;
 import com.faceopen.camerabenchmark.R;
-import com.faceopen.camerabenchmark.cameraoptions.CameraOpActivity;
 import com.faceopen.camerabenchmark.cameraoptions.CameraOpActivity2;
 
 public class SplashActivity extends AppCompatActivity {

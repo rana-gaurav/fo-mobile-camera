@@ -17,7 +17,9 @@ public class CameraOpActivity2 extends AppCompatActivity {
 
     GridView gridView;
     String[] items = {"Under Light", "Under SunLight", "Left Side Light", "Right Side", "Light on Straight Face"};
-    Integer[] logo = {R.drawable.ic_android,
+    Integer[] logo = {
+
+            R.drawable.ic_android,
             R.drawable.ic_android,
             R.drawable.ic_android,
             R.drawable.ic_android,
