@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -19,11 +20,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.Resource;
 import com.faceopen.camerabenchmark.dialog.PickerDialog;
 import com.faceopen.camerabenchmark.dialog.SimplePickerDialog;
 import com.faceopen.camerabenchmark.options.AspectRatioItem;
 import com.faceopen.camerabenchmark.options.Commons;
 import com.faceopen.camerabenchmark.options.SizeItem;
+import com.joanfuentes.hintcase.HintCase;
+import com.joanfuentes.hintcaseassets.contentholderanimators.FadeInContentHolderAnimator;
+import com.joanfuentes.hintcaseassets.contentholderanimators.FadeOutContentHolderAnimator;
+import com.joanfuentes.hintcaseassets.hintcontentholders.SimpleHintContentHolder;
+import com.joanfuentes.hintcaseassets.shapeanimators.RevealCircleShapeAnimator;
+import com.joanfuentes.hintcaseassets.shapeanimators.UnrevealCircleShapeAnimator;
+import com.joanfuentes.hintcaseassets.shapes.CircularShape;
+
 import java.util.List;
 import java.util.Set;
 import butterknife.BindView;
@@ -50,7 +62,12 @@ public class CameraActivity extends AppCompatActivity {
     @BindView(R.id.flip) ImageButton flipButton;
     @BindView(R.id.zoomValue) TextView zoomValueTextView;
     @BindView(R.id.iv_preview) ImageView ivPreView;
+    @BindView(R.id.iv_hint) ImageView ivHint;
+    @BindView(R.id.iv_hint_action) ImageView ivHintAction;
     @BindView(R.id.rl_main) RelativeLayout mainLayout;
+    @BindView(R.id.iv_hint_text) TextView ivHintText;
+
+
     private boolean isRecordingVideo;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private int currentFlash = Values.FLASH_AUTO;
@@ -72,6 +89,15 @@ public class CameraActivity extends AppCompatActivity {
             R.string.flash_off,
             R.string.flash_on,
     };
+
+    private String camAction = "straight";
+
+    private boolean f_straight = false;
+    private boolean f_left = false;
+    private boolean f_right = false;
+    private boolean f_up = false;
+    private boolean f_down = false;
+    private boolean isPreviewZoom = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -187,6 +213,8 @@ public class CameraActivity extends AppCompatActivity {
             }
         } else if (mode == Values.MODE_IMAGE) {
             FaceOpenCameraManager.getInstance().takePicture();
+            ivHintText.setText(R.string.face_straight);
+            showHintPreView(camAction);
         }
     }
 
@@ -214,6 +242,37 @@ public class CameraActivity extends AppCompatActivity {
         FaceOpenCameraManager.getInstance().flipCamera();
     }
 
+    @OnClick(R.id.iv_hint)
+    void hint() {
+        if(!isPreviewZoom) {
+            isPreviewZoom = true;
+            RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            buttonLayoutParams.setMargins(0, 100, 0, 100);
+            ivHint.setLayoutParams(buttonLayoutParams);
+            ivHintText.setVisibility(View.VISIBLE);
+            buttonLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+            mainLayout.setBackgroundColor(R.color.background);
+            ivHint.getLayoutParams().height = 1200;
+            ivHint.getLayoutParams().width = 1200;
+        }else {
+            isPreviewZoom = false;
+            RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            buttonLayoutParams.setMargins(0, 0, 0, 0);
+            buttonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            buttonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            ivHint.setLayoutParams(buttonLayoutParams);
+            ivHintText.setVisibility(View.GONE);
+            ivHint.getLayoutParams().height = 400;
+            ivHint.getLayoutParams().width = 400;
+        }
+        ivHint.requestLayout();
+    }
+
+    @OnClick(R.id.iv_hint_action)
+    void hintAction() {
+
+    }
+
     private void finishRecordingIfNeeded() {
         if (isRecordingVideo) {
             isRecordingVideo = false;
@@ -237,6 +296,12 @@ public class CameraActivity extends AppCompatActivity {
         FaceOpenCameraManager.getInstance().startPreView();
         configureMode();
         mainLayout.setVisibility(View.VISIBLE);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showCameraHint();
+            }
+        },1000);
         FaceOpenCameraManager.getInstance().registerCallback(new CameraCallback() {
             @Override
             public void frameReceived(ImageData imageData) {
@@ -244,8 +309,8 @@ public class CameraActivity extends AppCompatActivity {
                     Log.d(TAG, "" + imageData.getImageHeight());
                     Log.d(TAG, "" + imageData.getImageWidth());
                     Log.d(TAG, "" + imageData.getImageFormat());
-                    ivPreView.setVisibility(View.VISIBLE);
-                    ivPreView.setImageBitmap(imageData.getBitmap());
+                    //ivPreView.setVisibility(View.VISIBLE);
+                    //ivPreView.setImageBitmap(imageData.getBitmap());
                 }
             }
         });
@@ -314,4 +379,71 @@ public class CameraActivity extends AppCompatActivity {
             switchButton.setText(R.string.image_mode);
         }
     }
+
+    public void showCameraHint() {
+            View parentView = getWindow().getDecorView();
+            SimpleHintContentHolder blockInfo = new SimpleHintContentHolder.Builder(getApplicationContext())
+                    .setContentTitle("Take picture")
+                    .setContentText("Please click to take your face picture")
+                    .setTitleStyle(R.style.title)
+                    .setContentStyle(R.style.content)
+                    .build();
+            new HintCase(parentView)
+                    .setTarget(findViewById(R.id.action), new CircularShape())
+                    .setShapeAnimators(new RevealCircleShapeAnimator(),
+                            new UnrevealCircleShapeAnimator())
+                    .setHintBlock(blockInfo)
+                    .setOnClosedListener(new HintCase.OnClosedListener() {
+                        @Override
+                        public void onClosed() {
+                            showHintPreView(camAction);
+                        }
+                    })
+                    .show();
+
+    }
+
+    private void showHintPreView(String pose){
+        if(pose.contentEquals("straight")){
+            camAction = "left";
+            ivHintText.setText(R.string.face_straight);
+            getGifLoadedUsingGlidePreView(R.raw.straight);
+        }
+        if(pose.contentEquals("left")){
+            camAction = "right";
+            ivHintText.setText(R.string.face_left);
+           getGifLoadedUsingGlidePreView(R.raw.left);
+        }
+        if(pose.contentEquals("right")){
+            camAction = "up";
+            ivHintText.setText(R.string.face_right);
+            getGifLoadedUsingGlidePreView(R.raw.right);
+        }
+        if(pose.contentEquals("up")){
+            camAction = "down";
+            ivHintText.setText(R.string.face_up);
+            getGifLoadedUsingGlidePreView(R.raw.up);
+        }
+        if(pose.contentEquals("down")){
+            camAction = "";
+            ivHintText.setText(R.string.face_down);
+           getGifLoadedUsingGlidePreView(R.raw.down);
+        }
+        if(pose.contentEquals("")){
+            camAction = "";
+            ivHintText.setText("");
+            getGifLoadedUsingGlidePreView(null);
+        }
+    }
+
+    private ImageView getGifLoadedUsingGlidePreView(Integer resource) {
+        ImageView animatedImageView = new ImageView(this);
+        animatedImageView.setMaxHeight(900);
+        Glide.with(this)
+                .asGif()
+                .load(resource)
+                .into(ivHint);
+        return animatedImageView;
+    }
+
 }
