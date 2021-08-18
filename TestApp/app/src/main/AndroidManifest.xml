@@ -30,10 +30,6 @@
             android:name=".cameraoptions.CameraOpActivity2"
             android:exported="true" />
         <activity
-            android:name=".cameraoptions.CameraOpActivity"
-            android:exported="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity
             android:name=".splashScreen.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"

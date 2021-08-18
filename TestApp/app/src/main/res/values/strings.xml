@@ -21,10 +21,10 @@
     <string name="flash_auto">Auto</string>
     <string name="flash_on">On</string>
     <string name="flash_off">Off</string>
-    <string name="face_straight">Please keep straight face as shown</string>
-    <string name="face_left">Please move face to your left as shown</string>
-    <string name="face_right">Please move face to your right as shown</string>
-    <string name="face_up">Please move face up as shown</string>
-    <string name="face_down">Please move face down as shown</string>
+    <string name="face_straight">Please keep straight\n face as shown</string>
+    <string name="face_left">Please move face to\n your left as shown</string>
+    <string name="face_right">Please move face to\n your right as shown</string>
+    <string name="face_up">Please move face\n up as shown</string>
+    <string name="face_down">Please move face\n down as shown</string>
 
 </resources>
