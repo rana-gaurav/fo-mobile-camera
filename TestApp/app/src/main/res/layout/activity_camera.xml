@@ -48,6 +48,18 @@
         android:src="@drawable/light_off" />
 
     <TextView
+        android:id="@+id/tv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Back"
+        android:textSize="25dp"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
         android:id="@+id/tv_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,8 +69,7 @@
         android:textColor="@color/white"
         android:visibility="gone"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:src="@drawable/light_off" />
+        android:layout_centerInParent="true" />
 
     <TextView
         android:id="@+id/zoomValue"
@@ -195,34 +206,38 @@
 
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/iv_preview"
+    <LinearLayout
+        android:id="@+id/ll_preview"
         android:layout_width="300dp"
         android:layout_height="400dp"
+        android:background="@color/white"
+        android:gravity="center"
         android:visibility="gone"
-        android:rotation="270"
-        android:layout_centerInParent="true"/>
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:rotation="270"
-        android:layout_height="50dp"
-        android:id="@+id/iv_ok"
-        android:layout_marginRight="20dp"
-        android:src="@drawable/ic_check"
-        android:layout_alignBottom="@+id/iv_preview"
-        android:visibility="gone" />
+        android:id="@+id/iv_preview"
+        android:layout_width="295dp"
+        android:layout_weight="0.9"
+        android:layout_height="0dp"
+        android:rotation="270" />
 
-
-    <ImageView
+    <View
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:id="@+id/iv_del"
-        android:src="@drawable/ic_del"
-        android:visibility="gone"
-        android:layout_alignBottom="@+id/iv_preview"/>
+        android:layout_height="1dp"
+        android:background="@color/grey"/>
 
-   <FrameLayout
+    <ImageView
+        android:id="@+id/iv_del"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:src="@drawable/ic_del" />
+
+    </LinearLayout>
+
+    <FrameLayout
        android:layout_width="200dp"
        android:layout_height="200dp"
        android:layout_alignParentRight="true"
@@ -247,39 +262,75 @@
 
    </FrameLayout>
 
-    <ImageView
-        android:id="@+id/iv_hint"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:visibility="visible"
-        android:clickable="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:rotation="0" />
 
-    <TextView
-        android:id="@+id/iv_hint_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:textSize="30dp"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:layout_marginBottom="10dp"
-        android:clickable="true"
-        android:layout_marginVertical="200dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:rotation="0" />
-
-
-    <androidx.recyclerview.widget.RecyclerView
+    <FrameLayout
+        android:id="@+id/fl_list"
         android:layout_width="wrap_content"
         android:layout_height="250dp"
-        android:elevation="15dp"
+        android:layout_marginBottom="5dp"
         android:visibility="gone"
+        android:layout_alignParentBottom="true">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
         android:background="#3fffffff"
-        android:layout_alignParentBottom="true"
+        android:paddingStart="300dp"
+        android:paddingEnd="300dp"
+        android:clipToPadding="false"
+        android:layout_marginTop="10dp"
         android:id="@+id/lv1"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:gravity="center">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="200dp"
+            android:layout_marginLeft="5dp"
+            android:layout_height="250dp"
+            android:background="@drawable/custom_border"/>
+
+    </LinearLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_main"
+        android:layout_width="match_parent"
+        android:visibility="visible"
+        android:foregroundGravity="center"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/ll_tint"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_height="match_parent"
+            android:background="#E6000000"/>
+
+
+        <ImageView
+            android:id="@+id/iv_hint"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/iv_hint_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal"
+            android:textSize="30dp"
+            android:gravity="center"
+            android:layout_marginTop="100dp"
+            android:textColor="@color/white"
+            android:layout_marginBottom="10dp" />
+    </FrameLayout>
 
 </RelativeLayout>

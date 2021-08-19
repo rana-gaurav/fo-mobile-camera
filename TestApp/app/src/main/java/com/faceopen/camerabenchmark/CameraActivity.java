@@ -2,6 +2,7 @@ package com.faceopen.camerabenchmark;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,9 +11,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,8 +83,14 @@ public class CameraActivity extends AppCompatActivity {
     @BindView(R.id.lv1) RecyclerView listView;
     @BindView(R.id.tv_save) TextView tvSave;
     @BindView(R.id.tv_data) TextView tvData;
+    @BindView(R.id.tv_back) TextView tvBack;
     @BindView(R.id.iv_del) ImageView ivDel;
     @BindView(R.id.action_text) TextView actionText;
+    @BindView(R.id.fl_list) FrameLayout flList;
+    @BindView(R.id.ll_tint) LinearLayout llTint;
+    @BindView(R.id.ll_preview) LinearLayout llPreview;
+
+
 
     private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>() ;
     private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>() ;
@@ -88,7 +100,7 @@ public class CameraActivity extends AppCompatActivity {
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private int currentFlash = Values.FLASH_AUTO;
     private String TAG = "CameraActivity";
-    private long CAMERA_CAPTURE_TIME = 2000;
+    private long CAMERA_CAPTURE_TIME = 100;
     private String camAction = "straight";
     private String camText = "";
     private SelectionCallback selectionCallback;
@@ -274,22 +286,25 @@ public class CameraActivity extends AppCompatActivity {
     void hint() {
         if(!isPreviewZoom) {
             isPreviewZoom = true;
-            RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            FrameLayout.LayoutParams buttonLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
             buttonLayoutParams.setMargins(0, 100, 0, 100);
             ivHint.setLayoutParams(buttonLayoutParams);
             ivHintText.setVisibility(View.VISIBLE);
-            buttonLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+            buttonLayoutParams.gravity = Gravity.CENTER;
+            //buttonLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+            llTint.setVisibility(View.VISIBLE);
             //mainLayout.setBackgroundColor(R.color.background);
             ivHint.getLayoutParams().height = 1200;
             ivHint.getLayoutParams().width = 1200;
         }else {
             isPreviewZoom = false;
-            RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            FrameLayout.LayoutParams buttonLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
             buttonLayoutParams.setMargins(0, 0, 0, 0);
-            buttonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            buttonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            //buttonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            //buttonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             ivHint.setLayoutParams(buttonLayoutParams);
             ivHintText.setVisibility(View.GONE);
+            llTint.setVisibility(View.GONE);
             ivHint.getLayoutParams().height = 400;
             ivHint.getLayoutParams().width = 400;
         }
@@ -307,6 +322,13 @@ public class CameraActivity extends AppCompatActivity {
         Intent returnIntent = new Intent();
         returnIntent.putExtra("result",selectionType);
         setResult(Activity.RESULT_OK,returnIntent);
+        completeList.clear();
+        imageid.clear();
+        finish();
+    }
+
+    @OnClick(R.id.tv_back)
+    void clickBack() {
         completeList.clear();
         imageid.clear();
         finish();
@@ -522,9 +544,10 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void setListView(){
-        listView.setVisibility(View.VISIBLE);
         tvData.setVisibility(View.VISIBLE);
         tvSave.setVisibility(View.VISIBLE);
+        tvBack.setVisibility(View.VISIBLE);
+        flList.setVisibility(View.VISIBLE);
         actionButton.setVisibility(View.GONE);
         tvData.setText(""+ completeList.size() + " / " + TOTAL_IMAGES);
         adapter = new ListAdapter(CameraActivity.this, completeList);
@@ -541,6 +564,8 @@ public class CameraActivity extends AppCompatActivity {
                     Log.d("CCC", ""+shownPosition);
                     ivPreView.setVisibility(View.VISIBLE);
                     ivDel.setVisibility(View.VISIBLE);
+                    //showImageDialog(completeList.get(shownPosition));
+                    llPreview.setVisibility(View.VISIBLE);
                     ivPreView.setImageBitmap(completeList.get(shownPosition));
                 }
             }
@@ -550,7 +575,7 @@ public class CameraActivity extends AppCompatActivity {
 
     private int getCurrentItem(){
         return ((LinearLayoutManager)listView.getLayoutManager())
-                .findFirstVisibleItemPosition();
+                .findFirstVisibleItemPosition() + ((LinearLayoutManager)listView.getLayoutManager()).findLastCompletelyVisibleItemPosition()/2;
     }
 
     Runnable picRunnable = new Runnable() {
@@ -570,6 +595,27 @@ public class CameraActivity extends AppCompatActivity {
         if(b != null) {
             mSelectionType = b.getString("type");
         }
+    }
+
+    private void showImageDialog(Bitmap bitmap){
+        ImageView ivImage;
+        ImageView btDel;
+        Dialog settingsDialog = new Dialog(this);
+        settingsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        settingsDialog.setContentView(getLayoutInflater().inflate(R.layout.image_dialog, null));
+        ivImage = settingsDialog.findViewById(R.id.iv_image);
+        btDel = settingsDialog.findViewById(R.id.bt_del);
+        ivImage.setImageBitmap(bitmap);
+        btDel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(completeList.size() > 0) {
+                    adapter.removeAt(shownPosition);
+                    tvData.setText("" + completeList.size() + " / " + TOTAL_IMAGES);
+                }
+            }
+        });
+        settingsDialog.show();
     }
 
     @Override
