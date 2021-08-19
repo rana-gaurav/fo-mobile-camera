@@ -35,6 +35,43 @@
         android:background="?android:selectableItemBackground"/>
 
     <TextView
+        android:id="@+id/tv_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Save"
+        android:textSize="25dp"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/light_off" />
+
+    <TextView
+        android:id="@+id/tv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Back"
+        android:textSize="25dp"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/tv_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Save"
+        android:textSize="25dp"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true" />
+
+    <TextView
         android:id="@+id/zoomValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -56,6 +93,19 @@
         android:textColor="@android:color/holo_red_dark"
         android:visibility="invisible"
         tools:visibility="visible"/>
+
+    <TextView
+        android:id="@+id/action_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:textSize="25dp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:padding="16dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -136,9 +186,11 @@
             android:id="@+id/action"
             android:layout_width="wrap_content"
             android:layout_height="64dp"
+            android:visibility="visible"
             android:layout_centerHorizontal="true"
             android:background="?android:selectableItemBackground"
             android:padding="16dp" />
+
 
         <ImageButton
             android:id="@+id/flip"
@@ -154,15 +206,38 @@
 
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/iv_preview"
+    <LinearLayout
+        android:id="@+id/ll_preview"
         android:layout_width="300dp"
         android:layout_height="400dp"
+        android:background="@color/white"
+        android:gravity="center"
         android:visibility="gone"
-        android:rotation="270"
-        android:layout_alignParentBottom="true"/>
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
 
-   <FrameLayout
+    <ImageView
+        android:id="@+id/iv_preview"
+        android:layout_width="295dp"
+        android:layout_weight="0.9"
+        android:layout_height="0dp"
+        android:rotation="270" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey"/>
+
+    <ImageView
+        android:id="@+id/iv_del"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:src="@drawable/ic_del" />
+
+    </LinearLayout>
+
+    <FrameLayout
        android:layout_width="200dp"
        android:layout_height="200dp"
        android:layout_alignParentRight="true"
@@ -187,28 +262,75 @@
 
    </FrameLayout>
 
-    <ImageView
-        android:id="@+id/iv_hint"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:visibility="visible"
-        android:clickable="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:rotation="0" />
 
-    <TextView
-        android:id="@+id/iv_hint_text"
+    <FrameLayout
+        android:id="@+id/fl_list"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="250dp"
+        android:layout_marginBottom="5dp"
         android:visibility="gone"
-        android:textSize="30dp"
-        android:textColor="@color/black"
-        android:layout_marginBottom="10dp"
-        android:clickable="true"
-        android:layout_marginVertical="200dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:rotation="0" />
+        android:layout_alignParentBottom="true">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="#3fffffff"
+        android:paddingStart="300dp"
+        android:paddingEnd="300dp"
+        android:clipToPadding="false"
+        android:layout_marginTop="10dp"
+        android:id="@+id/lv1"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:gravity="center">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="200dp"
+            android:layout_marginLeft="5dp"
+            android:layout_height="250dp"
+            android:background="@drawable/custom_border"/>
+
+    </LinearLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_main"
+        android:layout_width="match_parent"
+        android:visibility="visible"
+        android:foregroundGravity="center"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/ll_tint"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_height="match_parent"
+            android:background="#E6000000"/>
+
+
+        <ImageView
+            android:id="@+id/iv_hint"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/iv_hint_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal"
+            android:textSize="30dp"
+            android:gravity="center"
+            android:layout_marginTop="100dp"
+            android:textColor="@color/white"
+            android:layout_marginBottom="10dp" />
+    </FrameLayout>
 
 </RelativeLayout>

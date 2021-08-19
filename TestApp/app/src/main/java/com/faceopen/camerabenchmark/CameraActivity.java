@@ -1,16 +1,24 @@
 package com.faceopen.camerabenchmark;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,16 +28,20 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.Resource;
+import com.faceopen.camerabenchmark.adapter.ListAdapter;
 import com.faceopen.camerabenchmark.dialog.PickerDialog;
 import com.faceopen.camerabenchmark.dialog.SimplePickerDialog;
 import com.faceopen.camerabenchmark.options.AspectRatioItem;
 import com.faceopen.camerabenchmark.options.Commons;
 import com.faceopen.camerabenchmark.options.SizeItem;
 import com.joanfuentes.hintcase.HintCase;
+import com.joanfuentes.hintcase.RectangularShape;
 import com.joanfuentes.hintcaseassets.contentholderanimators.FadeInContentHolderAnimator;
 import com.joanfuentes.hintcaseassets.contentholderanimators.FadeOutContentHolderAnimator;
 import com.joanfuentes.hintcaseassets.hintcontentholders.SimpleHintContentHolder;
@@ -37,6 +49,7 @@ import com.joanfuentes.hintcaseassets.shapeanimators.RevealCircleShapeAnimator;
 import com.joanfuentes.hintcaseassets.shapeanimators.UnrevealCircleShapeAnimator;
 import com.joanfuentes.hintcaseassets.shapes.CircularShape;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import butterknife.BindView;
@@ -67,12 +80,42 @@ public class CameraActivity extends AppCompatActivity {
     @BindView(R.id.iv_hint_action) ImageView ivHintAction;
     @BindView(R.id.rl_main) RelativeLayout mainLayout;
     @BindView(R.id.iv_hint_text) TextView ivHintText;
+    @BindView(R.id.lv1) RecyclerView listView;
+    @BindView(R.id.tv_save) TextView tvSave;
+    @BindView(R.id.tv_data) TextView tvData;
+    @BindView(R.id.tv_back) TextView tvBack;
+    @BindView(R.id.iv_del) ImageView ivDel;
+    @BindView(R.id.action_text) TextView actionText;
+    @BindView(R.id.fl_list) FrameLayout flList;
+    @BindView(R.id.ll_tint) LinearLayout llTint;
+    @BindView(R.id.ll_preview) LinearLayout llPreview;
 
 
+
+    private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>() ;
+    private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>() ;
+    private Handler picHandler = new Handler();
+    private int finalI;
     private boolean isRecordingVideo;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private int currentFlash = Values.FLASH_AUTO;
     private String TAG = "CameraActivity";
+    private long CAMERA_CAPTURE_TIME = 100;
+    private String camAction = "straight";
+    private String camText = "";
+    private SelectionCallback selectionCallback;
+    private String selectionType="";
+    private boolean f_straight = false;
+    private boolean f_left = false;
+    private boolean f_right = false;
+    private boolean f_up = false;
+    private boolean f_down = false;
+    private boolean isPreviewZoom = false;
+    private SelectionCallback mSelectionCallback;
+    private String mSelectionType = "";
+    private ListAdapter adapter;
+    private int shownPosition = 0;
+    private int TOTAL_IMAGES = 15;
     private static final int[] FLASH_OPTIONS = {
             Values.FLASH_AUTO,
             Values.FLASH_OFF,
@@ -91,20 +134,13 @@ public class CameraActivity extends AppCompatActivity {
             R.string.flash_on,
     };
 
-    private String camAction = "straight";
-
-    private boolean f_straight = false;
-    private boolean f_left = false;
-    private boolean f_right = false;
-    private boolean f_up = false;
-    private boolean f_down = false;
-    private boolean isPreviewZoom = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         ButterKnife.bind(this);
+        getIntentData();
         if (checkCameraPermission()) {
             startCamera();
         } else {
@@ -182,6 +218,8 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+
+
     @OnCheckedChanged(R.id.fillSpace)
     void onFillSpaceChecked(boolean checked) {
         preview.setFillSpace(checked);
@@ -202,7 +240,6 @@ public class CameraActivity extends AppCompatActivity {
 
     @OnClick(R.id.action)
     void action() {
-        Log.d("XXX", "action");
         int mode = FaceOpenCameraManager.getInstance().getMode();
         if (mode == Values.MODE_VIDEO) {
             if (isRecordingVideo) {
@@ -210,12 +247,14 @@ public class CameraActivity extends AppCompatActivity {
             } else {
                 isRecordingVideo = true;
                 FaceOpenCameraManager.getInstance().startRecording();
-                actionButton.setEnabled(false);
             }
         } else if (mode == Values.MODE_IMAGE) {
+            actionButton.setEnabled(false);
+            finalI = 0;
+            imageid.clear();
+            actionButton.setEnabled(false);
+            actionButton.setVisibility(View.GONE);
             FaceOpenCameraManager.getInstance().takePicture();
-            ivHintText.setText(R.string.face_straight);
-            showHintPreView(camAction);
         }
     }
 
@@ -247,28 +286,25 @@ public class CameraActivity extends AppCompatActivity {
     void hint() {
         if(!isPreviewZoom) {
             isPreviewZoom = true;
-            RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            FrameLayout.LayoutParams buttonLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
             buttonLayoutParams.setMargins(0, 100, 0, 100);
             ivHint.setLayoutParams(buttonLayoutParams);
             ivHintText.setVisibility(View.VISIBLE);
-            buttonLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-            mainLayout.setBackgroundColor(R.color.background);
+            buttonLayoutParams.gravity = Gravity.CENTER;
+            //buttonLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+            llTint.setVisibility(View.VISIBLE);
+            //mainLayout.setBackgroundColor(R.color.background);
             ivHint.getLayoutParams().height = 1200;
             ivHint.getLayoutParams().width = 1200;
-            //ivHintText.setTextColor(R.color.white);
-           /* getWindow().setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND,
-                    WindowManager.LayoutParams.FLAG_BLUR_BEHIND);*/
-
-           // preview.setAlpha(0.01f);
-
         }else {
             isPreviewZoom = false;
-            RelativeLayout.LayoutParams buttonLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            FrameLayout.LayoutParams buttonLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
             buttonLayoutParams.setMargins(0, 0, 0, 0);
-            buttonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            buttonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            //buttonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            //buttonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             ivHint.setLayoutParams(buttonLayoutParams);
             ivHintText.setVisibility(View.GONE);
+            llTint.setVisibility(View.GONE);
             ivHint.getLayoutParams().height = 400;
             ivHint.getLayoutParams().width = 400;
         }
@@ -280,17 +316,32 @@ public class CameraActivity extends AppCompatActivity {
 
     }
 
-    private void finishRecordingIfNeeded() {
-        if (isRecordingVideo) {
-            isRecordingVideo = false;
-            FaceOpenCameraManager.getInstance().finishRecord();
-            statusTextView.setVisibility(View.INVISIBLE);
-            switchButton.setVisibility(View.VISIBLE);
-            flipButton.setVisibility(View.VISIBLE);
-            actionButton.setEnabled(true);
-            actionButton.setImageResource(R.drawable.record);
+    @OnClick(R.id.tv_save)
+    void saveImage() {
+        //selectionCallback.onComplete(selectionType);
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("result",selectionType);
+        setResult(Activity.RESULT_OK,returnIntent);
+        completeList.clear();
+        imageid.clear();
+        finish();
+    }
+
+    @OnClick(R.id.tv_back)
+    void clickBack() {
+        completeList.clear();
+        imageid.clear();
+        finish();
+    }
+
+    @OnClick(R.id.iv_del)
+    void delImage(){
+        if(completeList.size() > 0) {
+            adapter.removeAt(shownPosition);
+            tvData.setText("" + completeList.size() + " / " + TOTAL_IMAGES);
         }
     }
+
 
     private void startCamera(){
         FaceOpenCameraManager.getInstance().init(this);
@@ -302,6 +353,7 @@ public class CameraActivity extends AppCompatActivity {
         FaceOpenCameraManager.getInstance().fillSpace(true);
         FaceOpenCameraManager.getInstance().startPreView();
         configureMode();
+        camText = getResources().getString(R.string.face_straight);
         mainLayout.setVisibility(View.VISIBLE);
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -316,6 +368,18 @@ public class CameraActivity extends AppCompatActivity {
                     Log.d(TAG, "" + imageData.getImageHeight());
                     Log.d(TAG, "" + imageData.getImageWidth());
                     Log.d(TAG, "" + imageData.getImageFormat());
+                    imageid.add(imageData.getBitmap());
+                    if(imageid.size() < 3) {
+                        completeList.addAll(imageid);
+                        Log.d("XXX", "frameReceived "+completeList.size());
+                        picHandler.postDelayed(picRunnable, CAMERA_CAPTURE_TIME);
+                    }else{
+                        //ivHintText.setText(R.string.face_straight);
+                        actionButton.setEnabled(true);
+                        actionButton.setVisibility(View.VISIBLE);
+                        showHintPreView(camAction);
+                        picHandler.removeCallbacks(picRunnable);
+                    }
                     //ivPreView.setVisibility(View.VISIBLE);
                     //ivPreView.setImageBitmap(imageData.getBitmap());
                 }
@@ -410,38 +474,63 @@ public class CameraActivity extends AppCompatActivity {
 
     }
 
+    public void showSaveHint() {
+        View parentView = getWindow().getDecorView();
+        SimpleHintContentHolder blockInfo = new SimpleHintContentHolder.Builder(getApplicationContext())
+                .setContentTitle("Please save the data")
+                .setContentText("Please review your pictures and click save")
+                .setTitleStyle(R.style.title)
+                .setContentStyle(R.style.content)
+                .build();
+        new HintCase(parentView)
+                .setTarget(findViewById(R.id.tv_save), new RectangularShape())
+                .setShapeAnimators(new RevealCircleShapeAnimator(),
+                        new UnrevealCircleShapeAnimator())
+                .setHintBlock(blockInfo)
+                .setOnClosedListener(new HintCase.OnClosedListener() {
+                    @Override
+                    public void onClosed() {
+
+                    }
+                })
+                .show();
+
+    }
+
     private void showHintPreView(String pose){
         if(pose.contentEquals("straight")){
             camAction = "left";
-            ivHintText.setText(R.string.face_straight);
+            camText = getResources().getString(R.string.face_straight);
             getGifLoadedUsingGlidePreView(R.raw.straight);
-
         }
         if(pose.contentEquals("left")){
             camAction = "right";
-            ivHintText.setText(R.string.face_left);
+            camText = getResources().getString(R.string.face_left);
            getGifLoadedUsingGlidePreView(R.raw.left);
         }
         if(pose.contentEquals("right")){
             camAction = "up";
-            ivHintText.setText(R.string.face_right);
+            camText = getResources().getString(R.string.face_right);
             getGifLoadedUsingGlidePreView(R.raw.right);
         }
         if(pose.contentEquals("up")){
             camAction = "down";
-            ivHintText.setText(R.string.face_up);
+            camText = getResources().getString(R.string.face_up);
             getGifLoadedUsingGlidePreView(R.raw.up);
         }
         if(pose.contentEquals("down")){
             camAction = "";
-            ivHintText.setText(R.string.face_down);
-           getGifLoadedUsingGlidePreView(R.raw.down);
+            camText = getResources().getString(R.string.face_down);
+            getGifLoadedUsingGlidePreView(R.raw.down);
         }
         if(pose.contentEquals("")){
             camAction = "";
-            ivHintText.setText("");
+            camText = "";
             getGifLoadedUsingGlidePreView(null);
+            setListView();
         }
+        actionText.setText(camText);
+        ivHintText.setText(camText);
     }
 
     private ImageView getGifLoadedUsingGlidePreView(Integer resource) {
@@ -454,4 +543,85 @@ public class CameraActivity extends AppCompatActivity {
         return animatedImageView;
     }
 
+    private void setListView(){
+        tvData.setVisibility(View.VISIBLE);
+        tvSave.setVisibility(View.VISIBLE);
+        tvBack.setVisibility(View.VISIBLE);
+        flList.setVisibility(View.VISIBLE);
+        actionButton.setVisibility(View.GONE);
+        tvData.setText(""+ completeList.size() + " / " + TOTAL_IMAGES);
+        adapter = new ListAdapter(CameraActivity.this, completeList);
+        listView.setHasFixedSize(true);
+        LinearLayoutManager layoutManager= new LinearLayoutManager(CameraActivity.this,LinearLayoutManager.HORIZONTAL, false);
+        listView.setLayoutManager(layoutManager);
+        listView.setAdapter(adapter);
+        listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE){
+                    shownPosition = getCurrentItem();
+                    Log.d("CCC", ""+shownPosition);
+                    ivPreView.setVisibility(View.VISIBLE);
+                    ivDel.setVisibility(View.VISIBLE);
+                    //showImageDialog(completeList.get(shownPosition));
+                    llPreview.setVisibility(View.VISIBLE);
+                    ivPreView.setImageBitmap(completeList.get(shownPosition));
+                }
+            }
+        });
+        //showSaveHint();
+    }
+
+    private int getCurrentItem(){
+        return ((LinearLayoutManager)listView.getLayoutManager())
+                .findFirstVisibleItemPosition() + ((LinearLayoutManager)listView.getLayoutManager()).findLastCompletelyVisibleItemPosition()/2;
+    }
+
+    Runnable picRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d("XXX", "takePicture ");
+            FaceOpenCameraManager.getInstance().takePicture();
+        }
+    };
+
+    public void getIntentData(){
+        Bundle b = getIntent().getExtras();
+        Intent intent = getIntent();
+        if(intent != null) {
+            //selectionCallback = (SelectionCallback) intent.getSerializableExtra("listener");
+        }
+        if(b != null) {
+            mSelectionType = b.getString("type");
+        }
+    }
+
+    private void showImageDialog(Bitmap bitmap){
+        ImageView ivImage;
+        ImageView btDel;
+        Dialog settingsDialog = new Dialog(this);
+        settingsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        settingsDialog.setContentView(getLayoutInflater().inflate(R.layout.image_dialog, null));
+        ivImage = settingsDialog.findViewById(R.id.iv_image);
+        btDel = settingsDialog.findViewById(R.id.bt_del);
+        ivImage.setImageBitmap(bitmap);
+        btDel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(completeList.size() > 0) {
+                    adapter.removeAt(shownPosition);
+                    tvData.setText("" + completeList.size() + " / " + TOTAL_IMAGES);
+                }
+            }
+        });
+        settingsDialog.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        imageid.clear();
+        completeList.clear();
+    }
 }
