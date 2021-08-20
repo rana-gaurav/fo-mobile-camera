@@ -34,7 +34,9 @@ public class CameraOpActivity2 extends AppCompatActivity {
     int selectedPos = 0;
     Set<String> listSelect = new HashSet<String>();
     String[] items = {"Under Light", "Under SunLight", "Left Side Light", "Right Side", "Light on Straight Face"};
-    Integer[] logo = {R.drawable.ic_android,
+    Integer[] logo = {
+
+            R.drawable.ic_android,
             R.drawable.ic_android,
             R.drawable.ic_android,
             R.drawable.ic_android,

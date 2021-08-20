@@ -19,10 +19,10 @@ public class CustomAdapter1 extends ArrayAdapter<String> {
     private final Context context;
     private final String[] items;
     private final Integer[] logo;
-    private int mPosition ;
+    private int mPosition;
 
     public CustomAdapter1(Context context, String[] items, Integer[] logo) {
-        super(context, R.layout.card_item,items);
+        super(context, R.layout.card_item, items);
         this.context = context;
         this.items = items;
         this.logo = logo;
@@ -31,37 +31,37 @@ public class CustomAdapter1 extends ArrayAdapter<String> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        LayoutInflater inflater=(LayoutInflater)   getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view=inflater.inflate(R.layout.card_item,null,true );
-        TextView title=(TextView) view.findViewById(R.id.tvData);
-        ImageView imageView=(ImageView) view.findViewById(R.id.imageView);
-        ImageView checkMark=(ImageView) view.findViewById(R.id.checkMark);
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.card_item, null, true);
+        TextView title = (TextView) view.findViewById(R.id.tvData);
+        ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
+        ImageView checkMark = (ImageView) view.findViewById(R.id.checkMark);
         title.setText(items[position]);
         imageView.setImageResource(logo[position]);
-        if(SharedPreferenceManager.getCategory1(context) && position == 0){
+        if (SharedPreferenceManager.getCategory1(context) && position == 0) {
             Log.d("YYY", "getCategory1");
             checkMark.setVisibility(View.VISIBLE);
         }
-        if(SharedPreferenceManager.getCategory2(context) && position == 1){
+        if (SharedPreferenceManager.getCategory2(context) && position == 1) {
             Log.d("YYY", "getCategory2");
             checkMark.setVisibility(View.VISIBLE);
         }
-        if(SharedPreferenceManager.getCategory3(context) && position == 2){
+        if (SharedPreferenceManager.getCategory3(context) && position == 2) {
             Log.d("YYY", "getCategory3");
             checkMark.setVisibility(View.VISIBLE);
         }
-        if(SharedPreferenceManager.getCategory4(context) && position == 3){
+        if (SharedPreferenceManager.getCategory4(context) && position == 3) {
             Log.d("YYY", "getCategory4");
             checkMark.setVisibility(View.VISIBLE);
         }
-        if(SharedPreferenceManager.getCategory5(context) && position == 4){
+        if (SharedPreferenceManager.getCategory5(context) && position == 4) {
             Log.d("YYY", "getCategory5");
             checkMark.setVisibility(View.VISIBLE);
         }
         return view;
     }
 
-    public void refresh(){
+    public void refresh() {
         notifyDataSetChanged();
     }
 }

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -22,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,6 +50,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
@@ -62,38 +65,63 @@ import top.defaults.view.TextButton;
 
 public class CameraActivity extends AppCompatActivity {
 
-    @BindView(R.id.preview) CameraView preview;
-    @BindView(R.id.status) TextView statusTextView;
-    @BindView(R.id.chooseSize) TextButton chooseSizeButton;
-    @BindView(R.id.flash) TextButton flashTextButton;
-    @BindView(R.id.flash_torch) ImageButton flashTorch;
-    @BindView(R.id.switch_mode) TextButton switchButton;
-    @BindView(R.id.action) ImageView actionButton;
-    @BindView(R.id.flip) ImageButton flipButton;
-    @BindView(R.id.zoomValue) TextView zoomValueTextView;
-    @BindView(R.id.iv_preview) ImageView ivPreView;
-    @BindView(R.id.iv_hint) ImageView ivHint;
-    @BindView(R.id.iv_hint_action) ImageView ivHintAction;
-    @BindView(R.id.rl_main) RelativeLayout mainLayout;
-    @BindView(R.id.iv_hint_text) TextView ivHintText;
-    @BindView(R.id.lv1) RecyclerView listView;
-    @BindView(R.id.tv_save) TextView tvSave;
-    @BindView(R.id.tv_data) TextView tvData;
-    @BindView(R.id.tv_back) TextView tvBack;
-    @BindView(R.id.iv_del) ImageView ivDel;
-    @BindView(R.id.action_text) TextView actionText;
-    @BindView(R.id.fl_list) FrameLayout flList;
-    @BindView(R.id.ll_tint) LinearLayout llTint;
-    @BindView(R.id.ll_preview) LinearLayout llPreview;
-    @BindView(R.id.tv_middle) TextView tvMiddle;
-    @BindView(R.id.rg_group) RadioGroup rgGroup;
-    @BindView(R.id.rb_save) RadioButton rbSave;
-    @BindView(R.id.rb_del) RadioButton rbDel;
+    @BindView(R.id.preview)
+    CameraView preview;
+    @BindView(R.id.status)
+    TextView statusTextView;
+    @BindView(R.id.chooseSize)
+    TextButton chooseSizeButton;
+    @BindView(R.id.flash)
+    TextButton flashTextButton;
+    @BindView(R.id.flash_torch)
+    ImageButton flashTorch;
+    @BindView(R.id.switch_mode)
+    TextButton switchButton;
+    @BindView(R.id.action)
+    ImageView actionButton;
+    @BindView(R.id.flip)
+    ImageButton flipButton;
+    @BindView(R.id.zoomValue)
+    TextView zoomValueTextView;
+    @BindView(R.id.iv_preview)
+    ImageView ivPreView;
+    @BindView(R.id.iv_hint)
+    ImageView ivHint;
+    @BindView(R.id.iv_hint_action)
+    ImageView ivHintAction;
+    @BindView(R.id.rl_main)
+    RelativeLayout mainLayout;
+    @BindView(R.id.iv_hint_text)
+    TextView ivHintText;
+    @BindView(R.id.lv1)
+    RecyclerView listView;
+    @BindView(R.id.tv_save)
+    TextView tvSave;
+    @BindView(R.id.tv_data)
+    TextView tvData;
+    @BindView(R.id.tv_back)
+    TextView tvBack;
+    @BindView(R.id.iv_del)
+    ImageView ivDel;
+    @BindView(R.id.action_text)
+    TextView actionText;
+    @BindView(R.id.fl_list)
+    FrameLayout flList;
+    @BindView(R.id.ll_tint)
+    LinearLayout llTint;
+    @BindView(R.id.ll_preview)
+    LinearLayout llPreview;
+    @BindView(R.id.blurLinearLayout)
+    LinearLayout llblurLayout;
+    @BindView(R.id.tv_middle)
+    TextView tvMiddle;
 
     private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>() ;
     private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>() ;
     private ArrayList<Bitmap> selectedData = new ArrayList<Bitmap>();
     HashMap<Integer, String> mMap =new HashMap<Integer, String>();
+    private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>();
+    private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>();
     private Handler picHandler = new Handler();
     private boolean isRecordingVideo;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
@@ -102,7 +130,7 @@ public class CameraActivity extends AppCompatActivity {
     private long CAMERA_CAPTURE_TIME = 100;
     private String camAction = "straight";
     private String camText = "";
-    private String selectionType="";
+    private String selectionType = "";
     private boolean isPreviewZoom = false;
     private ImagePreviewAdapter adapter;
     private int shownPosition = 0;
@@ -156,7 +184,8 @@ public class CameraActivity extends AppCompatActivity {
         if (supportedAspectRatios != null) {
             SimplePickerDialog<AspectRatioItem> dialog = SimplePickerDialog.create(new PickerDialog.ActionListener<AspectRatioItem>() {
                 @Override
-                public void onCancelClick(PickerDialog<AspectRatioItem> dialog) { }
+                public void onCancelClick(PickerDialog<AspectRatioItem> dialog) {
+                }
 
                 @Override
                 public void onDoneClick(PickerDialog<AspectRatioItem> dialog) {
@@ -273,7 +302,8 @@ public class CameraActivity extends AppCompatActivity {
 
     @OnClick(R.id.iv_hint)
     void hint() {
-        if(!isPreviewZoom) {
+        // This preview is shown to user how to take picture in particular direction
+        if (!isPreviewZoom) {
             isPreviewZoom = true;
             FrameLayout.LayoutParams buttonLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
             buttonLayoutParams.setMargins(0, 100, 0, 100);
@@ -284,7 +314,7 @@ public class CameraActivity extends AppCompatActivity {
             llTint.setVisibility(View.VISIBLE);
             ivHint.getLayoutParams().height = 1200;
             ivHint.getLayoutParams().width = 1200;
-        }else {
+        } else {
             isPreviewZoom = false;
             FrameLayout.LayoutParams buttonLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
             buttonLayoutParams.setMargins(0, 0, 0, 0);
@@ -321,6 +351,10 @@ public class CameraActivity extends AppCompatActivity {
         }
         Log.d("RRR", "saveImage "+selectedData.size());
         Intent returnIntent = new Intent();
+        returnIntent.putExtra("result", selectionType);
+        setResult(Activity.RESULT_OK, returnIntent);
+        completeList.clear();
+        imageid.clear();
         returnIntent.putExtra("result",selectionType);
         setResult(Activity.RESULT_OK,returnIntent);
         clearData();
@@ -335,8 +369,8 @@ public class CameraActivity extends AppCompatActivity {
 
 
     @OnClick(R.id.iv_del)
-    void delImage(){
-        if(completeList.size() > 0) {
+    void delImage() {
+        if (completeList.size() > 0) {
             adapter.removeAt(shownPosition);
             layoutManager.scrollToPosition(shownPosition);
             tvData.setText("" + completeList.size() + " / " + TOTAL_IMAGES);
@@ -344,10 +378,10 @@ public class CameraActivity extends AppCompatActivity {
     }
 
 
-    private void startCamera(){
+    private void startCamera() {
         FaceOpenCameraManager.getInstance().init(this);
         FaceOpenCameraManager.getInstance().initPreview(preview);
-        FaceOpenCameraManager.getInstance().initPhotographer(this,preview);
+        FaceOpenCameraManager.getInstance().initPhotographer(this, preview);
         FaceOpenCameraManager.getInstance().initPhotoHelper();
         FaceOpenCameraManager.getInstance().flipCamera();
         FaceOpenCameraManager.getInstance().enterFullscreen(getWindow());
@@ -361,22 +395,22 @@ public class CameraActivity extends AppCompatActivity {
             public void run() {
                 showCameraHint();
             }
-        },1000);
+        }, 1000);
         FaceOpenCameraManager.getInstance().registerCallback(new CameraCallback() {
             @Override
             public void frameReceived(ImageData imageData) {
-                if(imageData != null) {
+                if (imageData != null) {
                     Log.d(TAG, "" + imageData.getImageHeight());
                     Log.d(TAG, "" + imageData.getImageWidth());
                     Log.d(TAG, "" + imageData.getImageFormat());
                     tvMiddle.setVisibility(View.VISIBLE);
                     tvMiddle.setText("Please wait...");
                     imageid.add(imageData.getBitmap());
-                    if(imageid.size() < 3) {
+                    if (imageid.size() < 3) {
                         completeList.addAll(imageid);
-                        Log.d("XXX", "frameReceived "+completeList.size());
+                        Log.d("XXX", "frameReceived " + completeList.size());
                         picHandler.postDelayed(picRunnable, CAMERA_CAPTURE_TIME);
-                    }else{
+                    } else {
                         //ivHintText.setText(R.string.face_straight);
                         actionButton.setEnabled(true);
                         actionButton.setVisibility(View.VISIBLE);
@@ -400,7 +434,7 @@ public class CameraActivity extends AppCompatActivity {
         return true;
     }
 
-    public void requestPermission () {
+    public void requestPermission() {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO},
                 REQUEST_CAMERA_PERMISSION);
@@ -419,7 +453,7 @@ public class CameraActivity extends AppCompatActivity {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                                 != PackageManager.PERMISSION_GRANTED) {
-                                    showMessageOKCancel("You need to allow access permissions",
+                            showMessageOKCancel("You need to allow access permissions",
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -434,6 +468,7 @@ public class CameraActivity extends AppCompatActivity {
                 break;
         }
     }
+
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
         new AlertDialog.Builder(CameraActivity.this)
                 .setMessage(message)
@@ -443,7 +478,7 @@ public class CameraActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void configureMode(){
+    private void configureMode() {
         if (FaceOpenCameraManager.getInstance().getMode() == Values.MODE_VIDEO) {
             actionButton.setImageResource(R.drawable.record);
             chooseSizeButton.setText(R.string.video_size);
@@ -456,55 +491,55 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     public void showCameraHint() {
-            View parentView = getWindow().getDecorView();
-            SimpleHintContentHolder blockInfo = new SimpleHintContentHolder.Builder(getApplicationContext())
-                    .setContentTitle("Click picture")
-                    .setContentText("Please click for taking your face picture")
-                    .setTitleStyle(R.style.title)
-                    .setContentStyle(R.style.content)
-                    .build();
-            new HintCase(parentView)
-                    .setTarget(findViewById(R.id.action), new CircularShape())
-                    .setShapeAnimators(new RevealCircleShapeAnimator(),
-                            new UnrevealCircleShapeAnimator())
-                    .setHintBlock(blockInfo)
-                    .setOnClosedListener(new HintCase.OnClosedListener() {
-                        @Override
-                        public void onClosed() {
-                            showHintPreView(camAction);
-                        }
-                    })
-                    .show();
+        View parentView = getWindow().getDecorView();
+        SimpleHintContentHolder blockInfo = new SimpleHintContentHolder.Builder(getApplicationContext())
+                .setContentTitle("Click picture")
+                .setContentText("Please click for taking your face picture")
+                .setTitleStyle(R.style.title)
+                .setContentStyle(R.style.content)
+                .build();
+        new HintCase(parentView)
+                .setTarget(findViewById(R.id.action), new CircularShape())
+                .setShapeAnimators(new RevealCircleShapeAnimator(),
+                        new UnrevealCircleShapeAnimator())
+                .setHintBlock(blockInfo)
+                .setOnClosedListener(new HintCase.OnClosedListener() {
+                    @Override
+                    public void onClosed() {
+                        showHintPreView(camAction);
+                    }
+                })
+                .show();
 
     }
 
-    private void showHintPreView(String pose){
-        if(pose.contentEquals("straight")){
+    private void showHintPreView(String pose) {
+        if (pose.contentEquals("straight")) {
             camAction = "left";
             camText = getResources().getString(R.string.face_straight);
             getGifLoadedUsingGlidePreView(R.raw.straight);
         }
-        if(pose.contentEquals("left")){
+        if (pose.contentEquals("left")) {
             camAction = "right";
             camText = getResources().getString(R.string.face_left);
-           getGifLoadedUsingGlidePreView(R.raw.left);
+            getGifLoadedUsingGlidePreView(R.raw.left);
         }
-        if(pose.contentEquals("right")){
+        if (pose.contentEquals("right")) {
             camAction = "up";
             camText = getResources().getString(R.string.face_right);
             getGifLoadedUsingGlidePreView(R.raw.right);
         }
-        if(pose.contentEquals("up")){
+        if (pose.contentEquals("up")) {
             camAction = "down";
             camText = getResources().getString(R.string.face_up);
             getGifLoadedUsingGlidePreView(R.raw.up);
         }
-        if(pose.contentEquals("down")){
+        if (pose.contentEquals("down")) {
             camAction = "";
             camText = getResources().getString(R.string.face_down);
             getGifLoadedUsingGlidePreView(R.raw.down);
         }
-        if(pose.contentEquals("")){
+        if (pose.contentEquals("")) {
             camAction = "";
             camText = "";
             getGifLoadedUsingGlidePreView(null);
@@ -573,6 +608,14 @@ public class CameraActivity extends AppCompatActivity {
                     ivPreView.setVisibility(View.VISIBLE);
                     //ivDel.setVisibility(View.VISIBLE);
                     llPreview.setVisibility(View.VISIBLE);
+                    // need to work on Background the camera things
+                    if (llPreview.getVisibility() == View.VISIBLE) {
+                        llblurLayout.setVisibility(View.VISIBLE);
+
+
+
+                    }
+
                     ivPreView.setImageBitmap(completeList.get(shownPosition));
                     Iterator myVeryOwnIterator = mMap.keySet().iterator();
                     rgGroup.setOnCheckedChangeListener(null);
