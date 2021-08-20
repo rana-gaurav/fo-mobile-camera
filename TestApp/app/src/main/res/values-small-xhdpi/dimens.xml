@@ -16,7 +16,7 @@
     <dimen name="item_height">250dp</dimen>
     <dimen name="item_width">250dp</dimen>
 
+
     <dimen name="padding_start">200dp</dimen>
     <dimen name="padding_end">200dp</dimen>
-
 </resources>

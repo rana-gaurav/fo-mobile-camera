@@ -4,7 +4,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-
     <dimen name="bubble_border">3dp</dimen>
     <dimen name="arrow_width">40dp</dimen>
     <dimen name="arrow_height">20dp</dimen>
@@ -15,7 +14,6 @@
 
     <dimen name="item_height">250dp</dimen>
     <dimen name="item_width">250dp</dimen>
-
     <dimen name="padding_start">200dp</dimen>
     <dimen name="padding_end">200dp</dimen>
 
