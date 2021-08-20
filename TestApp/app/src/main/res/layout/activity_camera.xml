@@ -94,19 +94,6 @@
         android:visibility="invisible"
         tools:visibility="visible"/>
 
-    <TextView
-        android:id="@+id/action_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        android:textSize="25dp"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:layout_alignParentTop="true"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:padding="16dp" />
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -182,14 +169,12 @@
             android:textColor="@android:color/white"
             android:text="@string/video_mode" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/action"
-            android:layout_width="wrap_content"
+            android:layout_width="64dp"
             android:layout_height="64dp"
             android:visibility="visible"
-            android:layout_centerHorizontal="true"
-            android:background="?android:selectableItemBackground"
-            android:padding="16dp" />
+            android:layout_centerHorizontal="true" />
 
 
         <ImageButton
@@ -273,10 +258,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="@dimen/item_height"
         android:background="#3fffffff"
-        android:paddingStart="300dp"
-        android:paddingEnd="300dp"
+        android:paddingStart="@dimen/padding_start"
+        android:paddingEnd="@dimen/padding_end"
         android:clipToPadding="false"
         android:layout_marginTop="10dp"
         android:id="@+id/lv1"/>
@@ -284,14 +269,14 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="@dimen/item_height"
         android:gravity="center">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="200dp"
             android:layout_marginLeft="5dp"
-            android:layout_height="250dp"
+            android:layout_height="@dimen/item_height"
             android:background="@drawable/custom_border"/>
 
     </LinearLayout>
@@ -318,7 +303,21 @@
             android:id="@+id/iv_hint"
             android:layout_width="200dp"
             android:layout_height="200dp"
+            android:layout_gravity="left"
             android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/action_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:layout_gravity="right"
+            android:textSize="25dp"
+            android:gravity="center"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/white"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"/>
 
         <TextView
             android:id="@+id/iv_hint_text"
@@ -332,5 +331,16 @@
             android:textColor="@color/white"
             android:layout_marginBottom="10dp" />
     </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_middle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="24dp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:layout_centerInParent="true">
+
+    </TextView>
 
 </RelativeLayout>

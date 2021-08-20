@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -32,8 +31,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.Resource;
 import com.faceopen.camerabenchmark.adapter.ListAdapter;
 import com.faceopen.camerabenchmark.dialog.PickerDialog;
 import com.faceopen.camerabenchmark.dialog.SimplePickerDialog;
@@ -42,8 +39,6 @@ import com.faceopen.camerabenchmark.options.Commons;
 import com.faceopen.camerabenchmark.options.SizeItem;
 import com.joanfuentes.hintcase.HintCase;
 import com.joanfuentes.hintcase.RectangularShape;
-import com.joanfuentes.hintcaseassets.contentholderanimators.FadeInContentHolderAnimator;
-import com.joanfuentes.hintcaseassets.contentholderanimators.FadeOutContentHolderAnimator;
 import com.joanfuentes.hintcaseassets.hintcontentholders.SimpleHintContentHolder;
 import com.joanfuentes.hintcaseassets.shapeanimators.RevealCircleShapeAnimator;
 import com.joanfuentes.hintcaseassets.shapeanimators.UnrevealCircleShapeAnimator;
@@ -72,7 +67,7 @@ public class CameraActivity extends AppCompatActivity {
     @BindView(R.id.flash) TextButton flashTextButton;
     @BindView(R.id.flash_torch) ImageButton flashTorch;
     @BindView(R.id.switch_mode) TextButton switchButton;
-    @BindView(R.id.action) ImageButton actionButton;
+    @BindView(R.id.action) ImageView actionButton;
     @BindView(R.id.flip) ImageButton flipButton;
     @BindView(R.id.zoomValue) TextView zoomValueTextView;
     @BindView(R.id.iv_preview) ImageView ivPreView;
@@ -89,13 +84,11 @@ public class CameraActivity extends AppCompatActivity {
     @BindView(R.id.fl_list) FrameLayout flList;
     @BindView(R.id.ll_tint) LinearLayout llTint;
     @BindView(R.id.ll_preview) LinearLayout llPreview;
-
-
+    @BindView(R.id.tv_middle) TextView tvMiddle;
 
     private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>() ;
     private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>() ;
     private Handler picHandler = new Handler();
-    private int finalI;
     private boolean isRecordingVideo;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private int currentFlash = Values.FLASH_AUTO;
@@ -103,19 +96,13 @@ public class CameraActivity extends AppCompatActivity {
     private long CAMERA_CAPTURE_TIME = 100;
     private String camAction = "straight";
     private String camText = "";
-    private SelectionCallback selectionCallback;
     private String selectionType="";
-    private boolean f_straight = false;
-    private boolean f_left = false;
-    private boolean f_right = false;
-    private boolean f_up = false;
-    private boolean f_down = false;
     private boolean isPreviewZoom = false;
-    private SelectionCallback mSelectionCallback;
-    private String mSelectionType = "";
     private ListAdapter adapter;
     private int shownPosition = 0;
     private int TOTAL_IMAGES = 15;
+    private LinearLayoutManager layoutManager;
+
     private static final int[] FLASH_OPTIONS = {
             Values.FLASH_AUTO,
             Values.FLASH_OFF,
@@ -134,13 +121,11 @@ public class CameraActivity extends AppCompatActivity {
             R.string.flash_on,
     };
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         ButterKnife.bind(this);
-        getIntentData();
         if (checkCameraPermission()) {
             startCamera();
         } else {
@@ -218,8 +203,6 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-
-
     @OnCheckedChanged(R.id.fillSpace)
     void onFillSpaceChecked(boolean checked) {
         preview.setFillSpace(checked);
@@ -250,7 +233,6 @@ public class CameraActivity extends AppCompatActivity {
             }
         } else if (mode == Values.MODE_IMAGE) {
             actionButton.setEnabled(false);
-            finalI = 0;
             imageid.clear();
             actionButton.setEnabled(false);
             actionButton.setVisibility(View.GONE);
@@ -290,20 +272,19 @@ public class CameraActivity extends AppCompatActivity {
             buttonLayoutParams.setMargins(0, 100, 0, 100);
             ivHint.setLayoutParams(buttonLayoutParams);
             ivHintText.setVisibility(View.VISIBLE);
+            actionText.setVisibility(View.GONE);
             buttonLayoutParams.gravity = Gravity.CENTER;
-            //buttonLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
             llTint.setVisibility(View.VISIBLE);
-            //mainLayout.setBackgroundColor(R.color.background);
             ivHint.getLayoutParams().height = 1200;
             ivHint.getLayoutParams().width = 1200;
         }else {
             isPreviewZoom = false;
             FrameLayout.LayoutParams buttonLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
             buttonLayoutParams.setMargins(0, 0, 0, 0);
-            //buttonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            //buttonLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            buttonLayoutParams.gravity = Gravity.LEFT;
             ivHint.setLayoutParams(buttonLayoutParams);
             ivHintText.setVisibility(View.GONE);
+            actionText.setVisibility(View.VISIBLE);
             llTint.setVisibility(View.GONE);
             ivHint.getLayoutParams().height = 400;
             ivHint.getLayoutParams().width = 400;
@@ -331,13 +312,15 @@ public class CameraActivity extends AppCompatActivity {
     void clickBack() {
         completeList.clear();
         imageid.clear();
-        finish();
+        onBackPressed();
     }
+
 
     @OnClick(R.id.iv_del)
     void delImage(){
         if(completeList.size() > 0) {
             adapter.removeAt(shownPosition);
+            layoutManager.scrollToPosition(shownPosition);
             tvData.setText("" + completeList.size() + " / " + TOTAL_IMAGES);
         }
     }
@@ -368,6 +351,8 @@ public class CameraActivity extends AppCompatActivity {
                     Log.d(TAG, "" + imageData.getImageHeight());
                     Log.d(TAG, "" + imageData.getImageWidth());
                     Log.d(TAG, "" + imageData.getImageFormat());
+                    tvMiddle.setVisibility(View.VISIBLE);
+                    tvMiddle.setText("Please wait...");
                     imageid.add(imageData.getBitmap());
                     if(imageid.size() < 3) {
                         completeList.addAll(imageid);
@@ -377,6 +362,7 @@ public class CameraActivity extends AppCompatActivity {
                         //ivHintText.setText(R.string.face_straight);
                         actionButton.setEnabled(true);
                         actionButton.setVisibility(View.VISIBLE);
+                        tvMiddle.setText("Please click again");
                         showHintPreView(camAction);
                         picHandler.removeCallbacks(picRunnable);
                     }
@@ -454,8 +440,8 @@ public class CameraActivity extends AppCompatActivity {
     public void showCameraHint() {
             View parentView = getWindow().getDecorView();
             SimpleHintContentHolder blockInfo = new SimpleHintContentHolder.Builder(getApplicationContext())
-                    .setContentTitle("Take picture")
-                    .setContentText("Please click to take your face picture")
+                    .setContentTitle("Click picture")
+                    .setContentText("Please click for taking your face picture")
                     .setTitleStyle(R.style.title)
                     .setContentStyle(R.style.content)
                     .build();
@@ -471,29 +457,6 @@ public class CameraActivity extends AppCompatActivity {
                         }
                     })
                     .show();
-
-    }
-
-    public void showSaveHint() {
-        View parentView = getWindow().getDecorView();
-        SimpleHintContentHolder blockInfo = new SimpleHintContentHolder.Builder(getApplicationContext())
-                .setContentTitle("Please save the data")
-                .setContentText("Please review your pictures and click save")
-                .setTitleStyle(R.style.title)
-                .setContentStyle(R.style.content)
-                .build();
-        new HintCase(parentView)
-                .setTarget(findViewById(R.id.tv_save), new RectangularShape())
-                .setShapeAnimators(new RevealCircleShapeAnimator(),
-                        new UnrevealCircleShapeAnimator())
-                .setHintBlock(blockInfo)
-                .setOnClosedListener(new HintCase.OnClosedListener() {
-                    @Override
-                    public void onClosed() {
-
-                    }
-                })
-                .show();
 
     }
 
@@ -544,6 +507,9 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void setListView(){
+        tvMiddle.setVisibility(View.GONE);
+        llTint.setVisibility(View.GONE);
+        ivHint.setVisibility(View.GONE);
         tvData.setVisibility(View.VISIBLE);
         tvSave.setVisibility(View.VISIBLE);
         tvBack.setVisibility(View.VISIBLE);
@@ -552,7 +518,7 @@ public class CameraActivity extends AppCompatActivity {
         tvData.setText(""+ completeList.size() + " / " + TOTAL_IMAGES);
         adapter = new ListAdapter(CameraActivity.this, completeList);
         listView.setHasFixedSize(true);
-        LinearLayoutManager layoutManager= new LinearLayoutManager(CameraActivity.this,LinearLayoutManager.HORIZONTAL, false);
+        layoutManager= new LinearLayoutManager(CameraActivity.this,LinearLayoutManager.HORIZONTAL, false);
         listView.setLayoutManager(layoutManager);
         listView.setAdapter(adapter);
         listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -564,13 +530,11 @@ public class CameraActivity extends AppCompatActivity {
                     Log.d("CCC", ""+shownPosition);
                     ivPreView.setVisibility(View.VISIBLE);
                     ivDel.setVisibility(View.VISIBLE);
-                    //showImageDialog(completeList.get(shownPosition));
                     llPreview.setVisibility(View.VISIBLE);
                     ivPreView.setImageBitmap(completeList.get(shownPosition));
                 }
             }
         });
-        //showSaveHint();
     }
 
     private int getCurrentItem(){
@@ -585,38 +549,6 @@ public class CameraActivity extends AppCompatActivity {
             FaceOpenCameraManager.getInstance().takePicture();
         }
     };
-
-    public void getIntentData(){
-        Bundle b = getIntent().getExtras();
-        Intent intent = getIntent();
-        if(intent != null) {
-            //selectionCallback = (SelectionCallback) intent.getSerializableExtra("listener");
-        }
-        if(b != null) {
-            mSelectionType = b.getString("type");
-        }
-    }
-
-    private void showImageDialog(Bitmap bitmap){
-        ImageView ivImage;
-        ImageView btDel;
-        Dialog settingsDialog = new Dialog(this);
-        settingsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        settingsDialog.setContentView(getLayoutInflater().inflate(R.layout.image_dialog, null));
-        ivImage = settingsDialog.findViewById(R.id.iv_image);
-        btDel = settingsDialog.findViewById(R.id.bt_del);
-        ivImage.setImageBitmap(bitmap);
-        btDel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(completeList.size() > 0) {
-                    adapter.removeAt(shownPosition);
-                    tvData.setText("" + completeList.size() + " / " + TOTAL_IMAGES);
-                }
-            }
-        });
-        settingsDialog.show();
-    }
 
     @Override
     protected void onDestroy() {
