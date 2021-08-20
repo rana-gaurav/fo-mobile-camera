@@ -14,13 +14,45 @@
         app:layout_constraintTop_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 
+    <RadioGroup
+        android:id="@+id/rg_group"
+        android:layout_width="@dimen/item_height"
+        android:layout_height="40dp"
+        android:layout_marginBottom="5dp"
+        android:visibility="gone"
+        android:background="@drawable/pink_out_line"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/iv_image"
+        app:layout_constraintStart_toStartOf="@id/iv_image">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
+        <RadioButton
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginLeft="1dp"
+            android:id="@+id/rb_save"
+            android:background="@drawable/toggle_widget_background"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:gravity="center"
+            android:text="Save"
+            android:textColor="@color/green" />
+
+        <RadioButton
+            android:layout_marginRight="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:id="@+id/rb_del"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/toggle_widget_background"
+            android:button="@null"
+            android:gravity="center"
+            android:text="Delete"
+            android:textColor="@color/red" />
+    </RadioGroup>
 
 
 
