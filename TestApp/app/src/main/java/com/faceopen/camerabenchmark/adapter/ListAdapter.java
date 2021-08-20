@@ -42,6 +42,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         // final MyListData myListData = listdata[position];
         holder.imageView.setImageBitmap(imageid.get(position));
 
+
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,13 +71,15 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     }
 
     public void removeAt(int position) {
-        try{
-            imageid.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, imageid.size());
-            notifyDataSetChanged();
-        }catch (Exception e){
-            e.printStackTrace();
+        if(position>=0) {
+            try {
+                imageid.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, imageid.size());
+                notifyDataSetChanged();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
