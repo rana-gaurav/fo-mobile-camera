@@ -2,7 +2,6 @@ package com.faceopen.camerabenchmark;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,9 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -23,7 +20,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,7 +36,6 @@ import com.faceopen.camerabenchmark.options.AspectRatioItem;
 import com.faceopen.camerabenchmark.options.Commons;
 import com.faceopen.camerabenchmark.options.SizeItem;
 import com.joanfuentes.hintcase.HintCase;
-import com.joanfuentes.hintcase.RectangularShape;
 import com.joanfuentes.hintcaseassets.hintcontentholders.SimpleHintContentHolder;
 import com.joanfuentes.hintcaseassets.shapeanimators.RevealCircleShapeAnimator;
 import com.joanfuentes.hintcaseassets.shapeanimators.UnrevealCircleShapeAnimator;
@@ -544,11 +539,13 @@ public class CameraActivity extends AppCompatActivity {
         tvMiddle.setVisibility(View.GONE);
         llTint.setVisibility(View.GONE);
         ivHint.setVisibility(View.GONE);
+        actionButton.setVisibility(View.GONE);
+
         tvData.setVisibility(View.VISIBLE);
         tvSave.setVisibility(View.VISIBLE);
         tvBack.setVisibility(View.VISIBLE);
         flList.setVisibility(View.VISIBLE);
-        actionButton.setVisibility(View.GONE);
+
 
 
         tvData.setText("" + completeList.size() + " / " + TOTAL_IMAGES);
@@ -574,11 +571,7 @@ public class CameraActivity extends AppCompatActivity {
                     // need to work on Background the camera things
                     if (llPreview.getVisibility() == View.VISIBLE) {
                         llblurLayout.setVisibility(View.VISIBLE);
-
-
-
                     }
-
                     ivPreView.setImageBitmap(completeList.get(shownPosition));
                 }
             }

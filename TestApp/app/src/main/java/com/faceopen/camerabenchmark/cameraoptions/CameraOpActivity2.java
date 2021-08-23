@@ -3,28 +3,20 @@ package com.faceopen.camerabenchmark.cameraoptions;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.faceopen.camerabenchmark.CameraActivity;
 import com.faceopen.camerabenchmark.R;
-import com.faceopen.camerabenchmark.SelectionCallback;
 import com.faceopen.camerabenchmark.SharedPreferenceManager;
 import com.faceopen.camerabenchmark.adapter.CustomAdapter1;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 public class CameraOpActivity2 extends AppCompatActivity {
@@ -53,8 +45,10 @@ public class CameraOpActivity2 extends AppCompatActivity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // itemValue is here the Options of Different Lighting Conditions and passing
+                // these text to next Activity to evaluate the whether it done or not.
                 String itemValue = (String) gridView.getItemAtPosition(position);
-                Toast.makeText(getApplicationContext(), itemValue, Toast.LENGTH_SHORT).show();
+                Log.d("item","Item is :"+itemValue);
                 selectedPos = position;
                 Intent intent = new Intent(CameraOpActivity2.this, CameraActivity.class);
                 Bundle bundle = new Bundle();
@@ -68,18 +62,18 @@ public class CameraOpActivity2 extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == selectedPos) {
-            if(resultCode == Activity.RESULT_OK) {
+        if (requestCode == selectedPos) {
+            if (resultCode == Activity.RESULT_OK) {
                 Log.d("YYY", "onActivityResult " + selectedPos);
-                if(selectedPos == 0)
+                if (selectedPos == 0)
                     SharedPreferenceManager.setCategory1(this, true);
-                if(selectedPos == 1)
+                if (selectedPos == 1)
                     SharedPreferenceManager.setCategory2(this, true);
-                if(selectedPos == 2)
+                if (selectedPos == 2)
                     SharedPreferenceManager.setCategory3(this, true);
-                if(selectedPos == 3)
+                if (selectedPos == 3)
                     SharedPreferenceManager.setCategory4(this, true);
-                if(selectedPos == 4)
+                if (selectedPos == 4)
                     SharedPreferenceManager.setCategory5(this, true);
                 adapter1.refresh();
             }
