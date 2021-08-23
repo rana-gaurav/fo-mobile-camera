@@ -23,6 +23,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -104,9 +105,8 @@ public class CameraActivity extends AppCompatActivity {
     @BindView(R.id.ll_tint)
     LinearLayout llTint;
     @BindView(R.id.ll_preview)
-    LinearLayout llPreview;
-    @BindView(R.id.blurLinearLayout)
-    LinearLayout llblurLayout;
+    ConstraintLayout llPreview;
+    //@BindView(R.id.blurLinearLayout) LinearLayout llblurLayout;
     @BindView(R.id.tv_middle)
     TextView tvMiddle;
 
@@ -569,9 +569,10 @@ public class CameraActivity extends AppCompatActivity {
                     ivDel.setVisibility(View.VISIBLE);
                     llPreview.setVisibility(View.VISIBLE);
                     // need to work on Background the camera things
-                    if (llPreview.getVisibility() == View.VISIBLE) {
+                    /*if (llPreview.getVisibility() == View.VISIBLE) {
                         llblurLayout.setVisibility(View.VISIBLE);
-                    }
+                    }*/
+
                     ivPreView.setImageBitmap(completeList.get(shownPosition));
                 }
             }

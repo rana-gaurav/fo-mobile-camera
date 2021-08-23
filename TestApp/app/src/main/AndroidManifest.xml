@@ -12,7 +12,6 @@
         android:name="android.hardware.camera"
         android:required="true" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -25,15 +24,15 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <activity android:name=".OldActivity"></activity>
+        <activity android:name=".OldActivity" />
         <activity
             android:name=".cameraoptions.CameraOpActivity2"
             android:exported="true" />
         <activity
             android:name=".splashScreen.SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,7 +41,7 @@
         </activity>
         <activity
             android:name=".CameraActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
