@@ -12,7 +12,7 @@ import com.faceopen.camerabenchmark.cameraoptions.CameraOpActivity2;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static int SPLASH_SCREEN_TIME_OUT = 100;
+    private static int SPLASH_SCREEN_TIME_OUT = 400;
 
 
     @Override

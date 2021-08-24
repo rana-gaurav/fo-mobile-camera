@@ -56,6 +56,8 @@
         android:visibility="invisible"
         tools:visibility="visible" />
 
+    <!-- Layout to Display the Camera Options Like
+        Zoom, Flash, Aspect Ratio, size -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -115,10 +117,12 @@
             app:underline="true" />
     </LinearLayout>
 
+    <!-- Layout that display Action button to capture
+    images and switch camera to rear -->
     <RelativeLayout
         android:id="@+id/actions_layout"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="135dp"
         android:layout_alignParentBottom="true"
         android:background="#E6000000"
         android:paddingBottom="0dp">
@@ -136,8 +140,8 @@
 
         <ImageView
             android:id="@+id/action"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
             android:layout_centerInParent="true"
             android:layout_centerHorizontal="true"
             android:visibility="visible" />
@@ -157,7 +161,7 @@
 
     </RelativeLayout>
 
-
+    <!-- Layout that display the preview of all capture images -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ll_preview"
         android:layout_width="match_parent"
@@ -165,8 +169,6 @@
         android:background="@color/white"
         android:visibility="gone">
         <!--This need too be end b4 recyclerView-->
-
-
         <TextView
             android:id="@+id/tv_back"
             android:layout_width="wrap_content"
@@ -224,39 +226,36 @@
             android:id="@+id/viewLine"
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_marginTop="90dp"
             android:background="@color/background"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="90dp"
-            app:layout_constraintTop_toBottomOf="@id/iv_preview"
             app:layout_constraintStart_toStartOf="parent"
-            />
+            app:layout_constraintTop_toBottomOf="@id/iv_preview" />
 
         <ImageView
             android:id="@+id/iv_del"
             android:layout_width="match_parent"
             android:layout_height="36dp"
-            android:src="@drawable/ic_del"
             android:layout_marginTop="10dp"
+            android:src="@drawable/ic_del"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/viewLine"
-            />
+            app:layout_constraintTop_toBottomOf="@id/viewLine" />
 
         <View
             android:id="@+id/viewLine2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_marginTop="10dp"
             android:background="@color/background"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="10dp"
-            app:layout_constraintTop_toBottomOf="@id/iv_del"
             app:layout_constraintStart_toStartOf="parent"
-            />
+            app:layout_constraintTop_toBottomOf="@id/iv_del" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
+    <!--Its not required Now-->
     <FrameLayout
         android:layout_width="200dp"
         android:layout_height="200dp"
@@ -272,14 +271,6 @@
             android:src="@drawable/ic_max"
             android:visibility="gone" />
 
-        <!--        <ImageView-->
-        <!--            android:id="@+id/iv_hint"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="match_parent"-->
-        <!--            android:visibility="visible"-->
-        <!--            android:clickable="true"-->
-        <!--            android:rotation="0" />-->
-
     </FrameLayout>
 
 
@@ -288,7 +279,6 @@
         android:layout_width="wrap_content"
         android:layout_height="250dp"
         android:layout_alignParentBottom="true"
-
         android:visibility="gone">
 
         <androidx.recyclerview.widget.RecyclerView

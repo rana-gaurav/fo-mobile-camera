@@ -60,6 +60,22 @@ import top.defaults.view.TextButton;
 
 public class CameraActivity extends AppCompatActivity {
 
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
+    private static final int[] FLASH_OPTIONS = {
+            Values.FLASH_AUTO,
+            Values.FLASH_OFF,
+            Values.FLASH_ON,
+    };
+    private static final int[] FLASH_ICONS = {
+            R.drawable.ic_flash_auto,
+            R.drawable.ic_flash_off,
+            R.drawable.ic_flash_on,
+    };
+    private static final int[] FLASH_TITLES = {
+            R.string.flash_auto,
+            R.string.flash_off,
+            R.string.flash_on,
+    };
     @BindView(R.id.preview)
     CameraView preview;
     @BindView(R.id.status)
@@ -109,12 +125,17 @@ public class CameraActivity extends AppCompatActivity {
     //@BindView(R.id.blurLinearLayout) LinearLayout llblurLayout;
     @BindView(R.id.tv_middle)
     TextView tvMiddle;
-
+    Runnable picRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d("XXX", "takePicture ");
+            FaceOpenCameraManager.getInstance().takePicture();
+        }
+    };
     private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>();
     private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>();
     private Handler picHandler = new Handler();
     private boolean isRecordingVideo;
-    private static final int REQUEST_CAMERA_PERMISSION = 100;
     private int currentFlash = Values.FLASH_AUTO;
     private String TAG = "CameraActivity";
     private long CAMERA_CAPTURE_TIME = 100;
@@ -126,24 +147,6 @@ public class CameraActivity extends AppCompatActivity {
     private int shownPosition = 0;
     private int TOTAL_IMAGES = 15;
     private LinearLayoutManager layoutManager;
-
-    private static final int[] FLASH_OPTIONS = {
-            Values.FLASH_AUTO,
-            Values.FLASH_OFF,
-            Values.FLASH_ON,
-    };
-
-    private static final int[] FLASH_ICONS = {
-            R.drawable.ic_flash_auto,
-            R.drawable.ic_flash_off,
-            R.drawable.ic_flash_on,
-    };
-
-    private static final int[] FLASH_TITLES = {
-            R.string.flash_auto,
-            R.string.flash_off,
-            R.string.flash_on,
-    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -342,7 +345,6 @@ public class CameraActivity extends AppCompatActivity {
         onBackPressed();
     }
 
-
     @OnClick(R.id.iv_del)
     void delImage() {
         if (completeList.size() > 0) {
@@ -351,7 +353,6 @@ public class CameraActivity extends AppCompatActivity {
             tvData.setText("" + completeList.size() + " / " + TOTAL_IMAGES);
         }
     }
-
 
     private void startCamera() {
         FaceOpenCameraManager.getInstance().init(this);
@@ -583,14 +584,6 @@ public class CameraActivity extends AppCompatActivity {
         return ((LinearLayoutManager) listView.getLayoutManager())
                 .findFirstVisibleItemPosition() + ((LinearLayoutManager) listView.getLayoutManager()).findLastCompletelyVisibleItemPosition() / 2;
     }
-
-    Runnable picRunnable = new Runnable() {
-        @Override
-        public void run() {
-            Log.d("XXX", "takePicture ");
-            FaceOpenCameraManager.getInstance().takePicture();
-        }
-    };
 
     @Override
     protected void onDestroy() {
