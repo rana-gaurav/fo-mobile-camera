@@ -19,6 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CameraBenchmark">
+        <activity android:name=".PreviewActivity"></activity>
 
         <uses-library
             android:name="org.apache.http.legacy"
