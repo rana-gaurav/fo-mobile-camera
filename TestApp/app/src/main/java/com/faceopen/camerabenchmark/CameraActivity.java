@@ -115,13 +115,14 @@ public class CameraActivity extends AppCompatActivity {
     LinearLayout llblurLayout;
     @BindView(R.id.tv_middle)
     TextView tvMiddle;
+    @BindView(R.id.rg_group) RadioGroup rgGroup;
+    @BindView(R.id.rb_save) RadioButton rbSave;
+    @BindView(R.id.rb_del) RadioButton rbDel;
 
     private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>() ;
     private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>() ;
     private ArrayList<Bitmap> selectedData = new ArrayList<Bitmap>();
     HashMap<Integer, String> mMap =new HashMap<Integer, String>();
-    private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>();
-    private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>();
     private Handler picHandler = new Handler();
     private boolean isRecordingVideo;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
@@ -611,9 +612,6 @@ public class CameraActivity extends AppCompatActivity {
                     // need to work on Background the camera things
                     if (llPreview.getVisibility() == View.VISIBLE) {
                         llblurLayout.setVisibility(View.VISIBLE);
-
-
-
                     }
 
                     ivPreView.setImageBitmap(completeList.get(shownPosition));

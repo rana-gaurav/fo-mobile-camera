@@ -215,81 +215,77 @@
                 android:gravity="center">
 
                 <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="200dp"
+                    android:layout_marginTop="30dp"
                     app:cardCornerRadius="12dp">
 
                     <LinearLayout
                         android:id="@+id/ll_preview"
-                        android:layout_width="300dp"
-                        android:layout_height="400dp"
-                        android:layout_centerInParent="true"
-                        android:layout_gravity="center|center_horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:background="#E6E3E3"
+                        android:gravity="center_horizontal"
                         android:orientation="vertical"
                         android:visibility="gone">
 
-                            <ImageView
-                                android:id="@+id/iv_preview"
-                                android:layout_width="295dp"
-                                android:layout_height="0dp"
-                                android:layout_weight="0.9"
-                                android:rotation="270" />
+                        <ImageView
+                            android:id="@+id/iv_preview"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.9"
+                            android:rotation="270" />
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:background="@color/background" />
-    <RadioGroup
-        android:id="@+id/rg_group"
-        android:layout_width="@dimen/item_height"
-        android:layout_height="40dp"
-        android:layout_marginBottom="5dp"
-        android:background="@drawable/pink_out_line"
-        android:orientation="horizontal">
 
-        <RadioButton
-            android:layout_marginTop="1dp"
-            android:layout_marginBottom="1dp"
-            android:layout_marginLeft="1dp"
-            android:id="@+id/rb_save"
-            android:background="@drawable/toggle_widget_background"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:button="@null"
-            android:gravity="center"
-            android:text="Save"
-            android:textColor="@color/green" />
+                        <RadioGroup
+                            android:id="@+id/rg_group"
+                            android:layout_width="@dimen/item_height"
+                            android:layout_height="40dp"
+                            android:background="@drawable/pink_out_line"
+                            android:orientation="horizontal">
 
-        <RadioButton
-            android:layout_marginRight="1dp"
-            android:layout_marginTop="1dp"
-            android:layout_marginBottom="1dp"
-            android:id="@+id/rb_del"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/toggle_widget_background"
-            android:button="@null"
-            android:gravity="center"
-            android:text="Delete"
-            android:textColor="@color/red" />
-    </RadioGroup>
+                            <RadioButton
+                                android:id="@+id/rb_save"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="1dp"
+                                android:layout_marginTop="1dp"
+                                android:layout_marginBottom="1dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/toggle_widget_background"
+                                android:button="@null"
+                                android:gravity="center"
+                                android:text="Save"
+                                android:textColor="@color/green" />
+
+                            <RadioButton
+                                android:id="@+id/rb_del"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginTop="1dp"
+                                android:layout_marginRight="1dp"
+                                android:layout_marginBottom="1dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/toggle_widget_background"
+                                android:button="@null"
+                                android:gravity="center"
+                                android:text="Delete"
+                                android:textColor="@color/red" />
+                        </RadioGroup>
+
 
                         <ImageView
                             android:id="@+id/iv_del"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
                             android:layout_weight="0.1"
-                            android:src="@drawable/ic_del" />
-    <ImageView
-        android:id="@+id/iv_del"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.1"
-        android:visibility="gone"
-        android:src="@drawable/ic_del" />
+                            android:src="@drawable/ic_del"
+                            android:visibility="gone" />
 
                         <!--<androidx.cardview.widget.CardView
                             android:layout_width="wrap_content"
