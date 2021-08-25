@@ -32,11 +32,11 @@ import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
 
 import com.bumptech.glide.Glide;
-import com.joanfuentes.hintcase.HintCase;
-import com.joanfuentes.hintcaseassets.hintcontentholders.SimpleHintContentHolder;
-import com.joanfuentes.hintcaseassets.shapeanimators.RevealCircleShapeAnimator;
-import com.joanfuentes.hintcaseassets.shapeanimators.UnrevealCircleShapeAnimator;
-import com.joanfuentes.hintcaseassets.shapes.CircularShape;
+//import com.joanfuentes.hintcase.HintCase;
+//import com.joanfuentes.hintcaseassets.hintcontentholders.SimpleHintContentHolder;
+//import com.joanfuentes.hintcaseassets.shapeanimators.RevealCircleShapeAnimator;
+//import com.joanfuentes.hintcaseassets.shapeanimators.UnrevealCircleShapeAnimator;
+//import com.joanfuentes.hintcaseassets.shapes.CircularShape;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,6 +80,8 @@ public class CameraActivity extends AppCompatActivity {
     Button btnHint;
     Tooltip tooltip;
 
+    int count = 0;
+
     private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>() ;
     private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>() ;
     private ArrayList<Bitmap> selectedData = new ArrayList<Bitmap>();
@@ -120,6 +122,7 @@ public class CameraActivity extends AppCompatActivity {
 
     @OnClick(R.id.action)
     void action() {
+        hideClickHint();
         int mode = FaceOpenCameraManager.getInstance().getMode();
         if (mode == Values.MODE_VIDEO) {
             if (isRecordingVideo) {
@@ -154,7 +157,6 @@ public class CameraActivity extends AppCompatActivity {
     @OnClick(R.id.btn_hint)
     void hintClick() {
         zoomOut(1000);
-        showClickHint();
     }
 
     private void startCamera() {
@@ -264,28 +266,28 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-    public void showCameraHint() {
-        View parentView = getWindow().getDecorView();
-        SimpleHintContentHolder blockInfo = new SimpleHintContentHolder.Builder(getApplicationContext())
-                .setContentTitle("Click picture")
-                .setContentText("Please click for taking your face picture")
-                .setTitleStyle(R.style.title)
-                .setContentStyle(R.style.content)
-                .build();
-        new HintCase(parentView)
-                .setTarget(findViewById(R.id.action), new CircularShape())
-                .setShapeAnimators(new RevealCircleShapeAnimator(),
-                        new UnrevealCircleShapeAnimator())
-                .setHintBlock(blockInfo)
-                .setOnClosedListener(new HintCase.OnClosedListener() {
-                    @Override
-                    public void onClosed() {
-
-                    }
-                })
-                .show();
-
-    }
+//    public void showCameraHint() {
+//        View parentView = getWindow().getDecorView();
+//        SimpleHintContentHolder blockInfo = new SimpleHintContentHolder.Builder(getApplicationContext())
+//                .setContentTitle("Click picture")
+//                .setContentText("Please click for taking your face picture")
+//                .setTitleStyle(R.style.title)
+//                .setContentStyle(R.style.content)
+//                .build();
+//        new HintCase(parentView)
+//                .setTarget(findViewById(R.id.action), new CircularShape())
+//                .setShapeAnimators(new RevealCircleShapeAnimator(),
+//                        new UnrevealCircleShapeAnimator())
+//                .setHintBlock(blockInfo)
+//                .setOnClosedListener(new HintCase.OnClosedListener() {
+//                    @Override
+//                    public void onClosed() {
+//
+//                    }
+//                })
+//                .show();
+//
+//    }
 
     private void showHintPreView(String pose) {
         if (pose.contentEquals("straight")) {
@@ -436,13 +438,12 @@ public class CameraActivity extends AppCompatActivity {
                 .clickToHide(true)
                 .corner(5)
                 .position(Position.TOP)
-                .show(4000);
+                .show(3000);
     }
 
     private void hideClickHint(){
         if(tooltip != null) {
             tooltip.close();
-            tooltip.closeNow();
         }
     }
 }
