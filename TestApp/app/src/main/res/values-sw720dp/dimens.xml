@@ -19,4 +19,9 @@
     <dimen name="padding_start">300dp</dimen>
     <dimen name="padding_end">300dp</dimen>
 
+
+    <dimen name="hint_large_size">1200dp</dimen>
+    <dimen name="hint_small_size">100dp</dimen>
+
+
 </resources>

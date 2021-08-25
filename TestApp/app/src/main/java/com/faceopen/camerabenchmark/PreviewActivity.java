@@ -1,7 +1,6 @@
 package com.faceopen.camerabenchmark;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 
 public class PreviewActivity extends AppCompatActivity {

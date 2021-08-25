@@ -26,6 +26,7 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -45,6 +46,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -181,21 +183,28 @@ public class Camera2Photographer implements InternalPhotographer {
 
         @Override
         public void onPrecaptureRequired() {
-            previewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
-                    CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
-            setState(STATE_PRECAPTURE);
-            try {
-                captureSession.capture(previewRequestBuilder.build(), this, null);
-                previewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
-                        CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE);
-            } catch (CameraAccessException e) {
-                callbackHandler.onError(new Error(Error.ERROR_CAMERA, e));
-            }
+//            previewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+//                    CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+//            setState(STATE_PRECAPTURE);
+//            try {
+//                captureSession.capture(previewRequestBuilder.build(), this, null);
+//                previewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+//                        CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE);
+//            } catch (CameraAccessException e) {
+//                callbackHandler.onError(new Error(Error.ERROR_CAMERA, e));
+//            }
         }
 
         @Override
         public void onReady() {
+            //createCameraPreviewSession();
             captureStillPicture();
+//            AsyncTask.execute(new Runnable() {
+//                @Override
+//                public voicreateCameraPreviewSessiond run() {
+//                   captureStillPicture();
+//                }
+//            });
         }
 
     };
@@ -852,6 +861,13 @@ public class Camera2Photographer implements InternalPhotographer {
             lockFocus();
         } else {
             captureStillPicture();
+            //createCameraPreviewSession();
+//            AsyncTask.execute(new Runnable() {
+//                @Override
+//                public void run() {
+//                    captureStillPicture();
+//                }
+//            });
         }
         preview.shot();
     }
@@ -991,40 +1007,14 @@ public class Camera2Photographer implements InternalPhotographer {
     private void captureStillPicture() {
         try {
             CaptureRequest.Builder captureRequestBuilder = camera.createCaptureRequest(
-                    CameraDevice.TEMPLATE_STILL_CAPTURE);
+                    CameraDevice.TEMPLATE_PREVIEW);
             captureRequestBuilder.addTarget(imageReader.getSurface());
-            captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                    previewRequestBuilder.get(CaptureRequest.CONTROL_AF_MODE));
-            switch (flash) {
-                case Values.FLASH_OFF:
-                    captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                            CaptureRequest.CONTROL_AE_MODE_ON);
-                    captureRequestBuilder.set(CaptureRequest.FLASH_MODE,
-                            CaptureRequest.FLASH_MODE_OFF);
-                    break;
-                case Values.FLASH_ON:
-                    captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                            CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
-                    break;
-                case Values.FLASH_TORCH:
-                    captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                            CaptureRequest.CONTROL_AE_MODE_ON);
-                    captureRequestBuilder.set(CaptureRequest.FLASH_MODE,
-                            CaptureRequest.FLASH_MODE_TORCH);
-                    break;
-                case Values.FLASH_AUTO:
-                    captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                            CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
-                    break;
-                case Values.FLASH_RED_EYE:
-                    captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                            CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
-                    break;
-            }
-            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,
-                    Utils.getOrientation(sensorOrientation, currentDeviceRotation));
-            captureRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, calculateZoomRect());
-            captureSession.stopRepeating();
+//            captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+//                    previewRequestBuilder.get(CaptureRequest.CONTROL_AF_MODE));
+//            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,
+//                    Utils.getOrientation(sensorOrientation, currentDeviceRotation));
+//            captureRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, calculateZoomRect());
+//            captureSession.stopRepeating();
             captureSession.capture(captureRequestBuilder.build(),
                     new CameraCaptureSession.CaptureCallback() {
                         @Override
@@ -1032,7 +1022,7 @@ public class Camera2Photographer implements InternalPhotographer {
                                                        @NonNull CaptureRequest request,
                                                        @NonNull TotalCaptureResult result) {
                             unlockFocus();
-                            callbackHandler.onShotFinished(nextImageAbsolutePath);
+                            //callbackHandler.onShotFinished(nextImageAbsolutePath);
                         }
 
                         @Override
@@ -1043,8 +1033,69 @@ public class Camera2Photographer implements InternalPhotographer {
                             callbackHandler.onError(new Error(Error.ERROR_CAMERA));
                         }
                     }, null);
+
         } catch (CameraAccessException e) {
             callbackHandler.onError(new Error(Error.ERROR_CAMERA, "Cannot capture a still picture.", e));
+        }
+    }
+
+    private void createCameraPreviewSession() {
+        try {
+            final SurfaceTexture texture = textureView.getSurfaceTexture();
+            assert texture != null;
+
+            // We configure the size of default buffer to be the size of camera preview we want.
+            texture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
+
+            // This is the output Surface we need to start preview.
+            final Surface surface = new Surface(texture);
+
+            // We set up a CaptureRequest.Builder with the output Surface.
+            previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            previewRequestBuilder.addTarget(surface);
+
+
+            //imageReader.setOnImageAvailableListener(imageListener, backgroundHandler);
+            previewRequestBuilder.addTarget(imageReader.getSurface());
+
+            // Here, we create a CameraCaptureSession for camera preview.
+            camera.createCaptureSession(
+                    Arrays.asList(imageReader.getSurface(), imageReader.getSurface()),
+                    new CameraCaptureSession.StateCallback() {
+
+                        @Override
+                        public void onConfigured(final CameraCaptureSession cameraCaptureSession) {
+                            // The camera is already closed
+                            if (null == camera) {
+                                return;
+                            }
+
+                            // When the session is ready, we start displaying the preview.
+                            captureSession = cameraCaptureSession;
+                            // Auto focus should be continuous for camera preview.
+                            previewRequestBuilder.set(
+                                    CaptureRequest.CONTROL_AF_MODE,
+                                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                            // Flash is automatically enabled when necessary.
+                            previewRequestBuilder.set(
+                                    CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+
+                            // Finally, we start displaying the camera preview.
+//                                previewRequest = previewRequestBuilder.build();
+//                                captureSession.setRepeatingRequest(
+//                                        previewRequest, captureCallback, backgroundHandler);
+                            Log.d("SSS", "createCameraPreviewSession");
+                            callbackHandler.onShotFinished(nextImageAbsolutePath);
+                        }
+
+                        @Override
+                        public void onConfigureFailed(final CameraCaptureSession cameraCaptureSession) {
+                            Log.d("SSS", "onConfigureFailed");
+                        }
+                    },
+                    null);
+        } catch (final CameraAccessException e) {
+            Log.d("SSS", "CameraAccessException");
         }
     }
 
@@ -1148,6 +1199,14 @@ public class Camera2Photographer implements InternalPhotographer {
                 exceptionCallback.run();
             }
             callbackHandler.onError(new Error(Error.ERROR_CAMERA, e));
+        }
+    }
+
+    class CaptureTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            captureStillPicture();
+            return null;
         }
     }
 }

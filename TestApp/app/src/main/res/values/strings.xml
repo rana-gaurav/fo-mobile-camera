@@ -26,5 +26,6 @@
     <string name="face_right">Please move face to\n your right as shown</string>
     <string name="face_up">Please move face\n up as shown</string>
     <string name="face_down">Please move face\n down as shown</string>
+    <string name="click_hint">Please press the click button</string>
 
 </resources>
