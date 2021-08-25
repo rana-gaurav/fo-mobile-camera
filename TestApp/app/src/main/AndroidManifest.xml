@@ -20,7 +20,8 @@
         android:supportsRtl="true"
         android:hardwareAccelerated="true"
         android:theme="@style/Theme.CameraBenchmark" >
-        <activity android:name=".PreviewActivity" >
+        <activity android:name=".PreviewActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
 
         <uses-library

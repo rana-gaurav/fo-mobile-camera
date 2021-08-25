@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,6 +18,8 @@ import com.faceopen.camerabenchmark.adapter.CustomAdapter1;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import butterknife.BindView;
 
 public class CameraOpActivity2 extends AppCompatActivity {
 
@@ -33,6 +35,9 @@ public class CameraOpActivity2 extends AppCompatActivity {
             R.drawable.ic_android,
             R.drawable.ic_android,
             R.drawable.ic_android};
+
+    @BindView(R.id.checkMark)
+    ImageView checkMark;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
