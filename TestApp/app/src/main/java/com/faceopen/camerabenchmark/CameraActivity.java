@@ -2,7 +2,6 @@ package com.faceopen.camerabenchmark;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,18 +11,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,20 +31,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.faceopen.camerabenchmark.adapter.ListAdapter;
+import com.faceopen.camerabenchmark.adapter.ImagePreviewAdapter;
+import com.faceopen.camerabenchmark.data.BitmapDT;
 import com.faceopen.camerabenchmark.dialog.PickerDialog;
 import com.faceopen.camerabenchmark.dialog.SimplePickerDialog;
 import com.faceopen.camerabenchmark.options.AspectRatioItem;
 import com.faceopen.camerabenchmark.options.Commons;
 import com.faceopen.camerabenchmark.options.SizeItem;
 import com.joanfuentes.hintcase.HintCase;
-import com.joanfuentes.hintcase.RectangularShape;
 import com.joanfuentes.hintcaseassets.hintcontentholders.SimpleHintContentHolder;
 import com.joanfuentes.hintcaseassets.shapeanimators.RevealCircleShapeAnimator;
 import com.joanfuentes.hintcaseassets.shapeanimators.UnrevealCircleShapeAnimator;
 import com.joanfuentes.hintcaseassets.shapes.CircularShape;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -64,6 +64,22 @@ import top.defaults.view.TextButton;
 
 public class CameraActivity extends AppCompatActivity {
 
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
+    private static final int[] FLASH_OPTIONS = {
+            Values.FLASH_AUTO,
+            Values.FLASH_OFF,
+            Values.FLASH_ON,
+    };
+    private static final int[] FLASH_ICONS = {
+            R.drawable.ic_flash_auto,
+            R.drawable.ic_flash_off,
+            R.drawable.ic_flash_on,
+    };
+    private static final int[] FLASH_TITLES = {
+            R.string.flash_auto,
+            R.string.flash_off,
+            R.string.flash_on,
+    };
     @BindView(R.id.preview)
     CameraView preview;
     @BindView(R.id.status)
@@ -114,17 +130,25 @@ public class CameraActivity extends AppCompatActivity {
     LinearLayout llblurLayout;
     @BindView(R.id.tv_middle)
     TextView tvMiddle;
-    @BindView(R.id.rg_group) RadioGroup rgGroup;
-    @BindView(R.id.rb_save) RadioButton rbSave;
-    @BindView(R.id.rb_del) RadioButton rbDel;
-
-    private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>() ;
-    private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>() ;
+    @BindView(R.id.rg_group)
+    RadioGroup rgGroup;
+    @BindView(R.id.rb_save)
+    RadioButton rbSave;
+    @BindView(R.id.rb_del)
+    RadioButton rbDel;
+    HashMap<Integer, String> mMap = new HashMap<Integer, String>();
+    Runnable picRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d("XXX", "takePicture ");
+            FaceOpenCameraManager.getInstance().takePicture();
+        }
+    };
+    private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>();
+    private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>();
     private ArrayList<Bitmap> selectedData = new ArrayList<Bitmap>();
-    HashMap<Integer, String> mMap =new HashMap<Integer, String>();
     private Handler picHandler = new Handler();
     private boolean isRecordingVideo;
-    private static final int REQUEST_CAMERA_PERMISSION = 100;
     private int currentFlash = Values.FLASH_AUTO;
     private String TAG = "CameraActivity";
     private long CAMERA_CAPTURE_TIME = 100;
@@ -137,24 +161,6 @@ public class CameraActivity extends AppCompatActivity {
     private int TOTAL_IMAGES = 15;
     private int deleteCount = 0;
     private LinearLayoutManager layoutManager;
-
-    private static final int[] FLASH_OPTIONS = {
-            Values.FLASH_AUTO,
-            Values.FLASH_OFF,
-            Values.FLASH_ON,
-    };
-
-    private static final int[] FLASH_ICONS = {
-            R.drawable.ic_flash_auto,
-            R.drawable.ic_flash_off,
-            R.drawable.ic_flash_on,
-    };
-
-    private static final int[] FLASH_TITLES = {
-            R.string.flash_auto,
-            R.string.flash_off,
-            R.string.flash_on,
-    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -194,7 +200,7 @@ public class CameraActivity extends AppCompatActivity {
                 }
             });
             dialog.setItems(supportedAspectRatios);
-            dialog.setInitialItem(Commons.findEqual(supportedAspectRatios,FaceOpenCameraManager.getInstance().getAspectRatio()));
+            dialog.setInitialItem(Commons.findEqual(supportedAspectRatios, FaceOpenCameraManager.getInstance().getAspectRatio()));
             dialog.show(getFragmentManager(), "aspectRatio");
         }
     }
@@ -339,25 +345,26 @@ public class CameraActivity extends AppCompatActivity {
     void saveImage() {
         //selectionCallback.onComplete(selectionType);
         Iterator myVeryOwnIterator = mMap.keySet().iterator();
-        while(myVeryOwnIterator.hasNext()) {
-            Integer key=(Integer)myVeryOwnIterator.next();
-            String value=(String)mMap.get(key);
-            if(value.equals("S")){
+        while (myVeryOwnIterator.hasNext()) {
+            Integer key = (Integer) myVeryOwnIterator.next();
+            String value = (String) mMap.get(key);
+            if (value.equals("S")) {
                 //selectedData.set(key, completeList.get(key));
             }
-            if(value.equals("D")){
-                Log.d("RRR", "saveImageD "+ key);
+            if (value.equals("D")) {
+                Log.d("RRR", "saveImageD " + key);
                 selectedData.remove(key);
             }
         }
-        Log.d("RRR", "saveImage "+selectedData.size());
+
+        Log.d("RRR", "saveImage " + selectedData.size());
         Intent returnIntent = new Intent();
         returnIntent.putExtra("result", selectionType);
         setResult(Activity.RESULT_OK, returnIntent);
         completeList.clear();
         imageid.clear();
-        returnIntent.putExtra("result",selectionType);
-        setResult(Activity.RESULT_OK,returnIntent);
+        returnIntent.putExtra("result", selectionType);
+        setResult(Activity.RESULT_OK, returnIntent);
         clearData();
         finish();
     }
@@ -368,7 +375,6 @@ public class CameraActivity extends AppCompatActivity {
         onBackPressed();
     }
 
-
     @OnClick(R.id.iv_del)
     void delImage() {
         if (completeList.size() > 0) {
@@ -377,7 +383,6 @@ public class CameraActivity extends AppCompatActivity {
             tvData.setText("" + completeList.size() + " / " + TOTAL_IMAGES);
         }
     }
-
 
     private void startCamera() {
         FaceOpenCameraManager.getInstance().init(this);
@@ -401,14 +406,23 @@ public class CameraActivity extends AppCompatActivity {
             @Override
             public void frameReceived(ImageData imageData) {
                 if (imageData != null) {
+
                     Log.d(TAG, "" + imageData.getImageHeight());
                     Log.d(TAG, "" + imageData.getImageWidth());
                     Log.d(TAG, "" + imageData.getImageFormat());
+
                     tvMiddle.setVisibility(View.VISIBLE);
                     tvMiddle.setText("Please wait...");
+
                     imageid.add(imageData.getBitmap());
+
                     if (imageid.size() < 3) {
+
                         completeList.addAll(imageid);
+
+                        // create a singleTon class to store the data to transfer to another activity
+                        BitmapDT.getInstance().setBitMaps(completeList);
+
                         Log.d("XXX", "frameReceived " + completeList.size());
                         picHandler.postDelayed(picRunnable, CAMERA_CAPTURE_TIME);
                     } else {
@@ -544,7 +558,14 @@ public class CameraActivity extends AppCompatActivity {
             camAction = "";
             camText = "";
             getGifLoadedUsingGlidePreView(null);
-            setListView();
+            //setListView();
+
+            // setting up data in new Activity
+            Log.d("CCC", "start");
+            Intent intent = new Intent(CameraActivity.this, PreviewActivity.class);
+            startActivity(intent);
+            Log.d("CCC", "end");
+
         }
         actionText.setText(camText);
         ivHintText.setText(camText);
@@ -560,7 +581,8 @@ public class CameraActivity extends AppCompatActivity {
         return animatedImageView;
     }
 
-    private void setListView(){
+    private void setListView() {
+
         tvMiddle.setVisibility(View.GONE);
         llTint.setVisibility(View.GONE);
         ivHint.setVisibility(View.GONE);
@@ -569,33 +591,41 @@ public class CameraActivity extends AppCompatActivity {
         tvBack.setVisibility(View.VISIBLE);
         flList.setVisibility(View.VISIBLE);
         actionButton.setVisibility(View.GONE);
+
+        // just tested with singleTon Object
+
+        /*ArrayList<Bitmap> myList=new ArrayList<Bitmap>();
+        BitmapDT bitmapDT=BitmapDT.getInstance();
+        myList=bitmapDT.getBitmaps();*/
+
         adapter = new ImagePreviewAdapter(CameraActivity.this, completeList);
         listView.setHasFixedSize(true);
-        layoutManager= new LinearLayoutManager(CameraActivity.this,LinearLayoutManager.HORIZONTAL, false);
+        layoutManager = new LinearLayoutManager(CameraActivity.this, LinearLayoutManager.HORIZONTAL, false);
         listView.setLayoutManager(layoutManager);
         listView.setAdapter(adapter);
         rbSave.setChecked(true);
         selectedData.addAll(completeList);
-        tvData.setText(""+ selectedData.size() + " / " + TOTAL_IMAGES);
+        tvData.setText("" + selectedData.size() + " / " + TOTAL_IMAGES);
         rgGroup.setOnCheckedChangeListener(null);
 
         RadioGroup.OnCheckedChangeListener radioListener = new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == R.id.rb_save){
-                    if(deleteCount > 0){
+                if (checkedId == R.id.rb_save) {
+                    if (deleteCount > 0) {
                         deleteCount--;
                     }
-                    mMap.put(shownPosition,"S");
+                    mMap.put(shownPosition, "S");
                     selectedData.add(shownPosition, completeList.get(shownPosition));
-                    Log.d("RRR", ""+ selectedData.size());
-                }if(checkedId == R.id.rb_del){
-                    deleteCount++;
-                    mMap.put(shownPosition,"D");
-                    //selectedData.remove(shownPosition);
-                    Log.d("RRR", ""+ selectedData.size());
+                    Log.d("RRR", "" + selectedData.size());
                 }
-                tvData.setText(""+ (TOTAL_IMAGES - deleteCount) + " / " + TOTAL_IMAGES);
+                if (checkedId == R.id.rb_del) {
+                    deleteCount++;
+                    mMap.put(shownPosition, "D");
+                    //selectedData.remove(shownPosition);
+                    Log.d("RRR", "" + selectedData.size());
+                }
+                tvData.setText("" + (TOTAL_IMAGES - deleteCount) + " / " + TOTAL_IMAGES);
             }
         };
 
@@ -618,19 +648,19 @@ public class CameraActivity extends AppCompatActivity {
                     Iterator myVeryOwnIterator = mMap.keySet().iterator();
                     rgGroup.setOnCheckedChangeListener(null);
                     rbSave.setChecked(true);
-                    try{
-                        while(myVeryOwnIterator.hasNext()) {
-                            Integer key=(Integer)myVeryOwnIterator.next();
-                            String value=(String) mMap.get(key);
-                            if(key == shownPosition && value.equals("S")){
+                    try {
+                        while (myVeryOwnIterator.hasNext()) {
+                            Integer key = (Integer) myVeryOwnIterator.next();
+                            String value = (String) mMap.get(key);
+                            if (key == shownPosition && value.equals("S")) {
                                 rbSave.setChecked(true);
                             }
-                            if(key == shownPosition && value.equals("D")){
+                            if (key == shownPosition && value.equals("D")) {
                                 rbDel.setChecked(true);
                             }
                         }
                         rgGroup.setOnCheckedChangeListener(radioListener);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -638,18 +668,10 @@ public class CameraActivity extends AppCompatActivity {
         });
     }
 
-    private int getCurrentItem(){
-        return ((LinearLayoutManager)listView.getLayoutManager())
-                .findFirstVisibleItemPosition() + ((LinearLayoutManager)listView.getLayoutManager()).findLastCompletelyVisibleItemPosition()/2;
+    private int getCurrentItem() {
+        return ((LinearLayoutManager) listView.getLayoutManager())
+                .findFirstVisibleItemPosition() + ((LinearLayoutManager) listView.getLayoutManager()).findLastCompletelyVisibleItemPosition() / 2;
     }
-
-    Runnable picRunnable = new Runnable() {
-        @Override
-        public void run() {
-            Log.d("XXX", "takePicture ");
-            FaceOpenCameraManager.getInstance().takePicture();
-        }
-    };
 
     @Override
     protected void onDestroy() {
@@ -657,7 +679,7 @@ public class CameraActivity extends AppCompatActivity {
         clearData();
     }
 
-    private void clearData(){
+    private void clearData() {
         completeList.clear();
         selectedData.clear();
         imageid.clear();

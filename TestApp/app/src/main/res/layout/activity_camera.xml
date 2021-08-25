@@ -117,8 +117,9 @@
 
     <RelativeLayout
         android:id="@+id/actions_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="135dp"
+        android:background="#E6000000"
         android:layout_alignParentBottom="true">
 
         <top.defaults.view.TextButton
@@ -133,8 +134,9 @@
 
         <ImageView
             android:id="@+id/action"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_centerInParent="true"
             android:layout_centerHorizontal="true"
             android:visibility="visible" />
 
