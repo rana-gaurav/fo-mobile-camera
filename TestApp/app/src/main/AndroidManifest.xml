@@ -35,7 +35,7 @@
             android:name=".splashScreen.SplashActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,7 +45,7 @@
         <activity
             android:name=".CameraActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"/>/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
