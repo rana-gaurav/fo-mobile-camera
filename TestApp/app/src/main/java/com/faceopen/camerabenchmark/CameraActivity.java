@@ -581,7 +581,7 @@ public class CameraActivity extends AppCompatActivity {
         return animatedImageView;
     }
 
-    private void setListView() {
+    /*private void setListView() {
 
         tvMiddle.setVisibility(View.GONE);
         llTint.setVisibility(View.GONE);
@@ -592,11 +592,10 @@ public class CameraActivity extends AppCompatActivity {
         flList.setVisibility(View.VISIBLE);
         actionButton.setVisibility(View.GONE);
 
-        // just tested with singleTon Object
 
-        /*ArrayList<Bitmap> myList=new ArrayList<Bitmap>();
+        ArrayList<Bitmap> myList=new ArrayList<Bitmap>();
         BitmapDT bitmapDT=BitmapDT.getInstance();
-        myList=bitmapDT.getBitmaps();*/
+        myList=bitmapDT.getBitmaps();
 
         adapter = new ImagePreviewAdapter(CameraActivity.this, completeList);
         listView.setHasFixedSize(true);
@@ -666,7 +665,7 @@ public class CameraActivity extends AppCompatActivity {
                 }
             }
         });
-    }
+    }*/
 
     private int getCurrentItem() {
         return ((LinearLayoutManager) listView.getLayoutManager())
