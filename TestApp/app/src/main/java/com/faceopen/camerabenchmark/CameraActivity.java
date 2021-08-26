@@ -1,154 +1,96 @@
 package com.faceopen.camerabenchmark;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Gravity;
+
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
+import android.view.ViewGroup;
+
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.ChangeBounds;
+import androidx.transition.ChangeImageTransform;
+import androidx.transition.Transition;
+import androidx.transition.TransitionManager;
+import androidx.transition.TransitionSet;
 
 import com.bumptech.glide.Glide;
-import com.faceopen.camerabenchmark.adapter.ImagePreviewAdapter;
 import com.faceopen.camerabenchmark.data.BitmapDT;
-import com.faceopen.camerabenchmark.dialog.PickerDialog;
-import com.faceopen.camerabenchmark.dialog.SimplePickerDialog;
-import com.faceopen.camerabenchmark.options.AspectRatioItem;
-import com.faceopen.camerabenchmark.options.Commons;
-import com.faceopen.camerabenchmark.options.SizeItem;
-import com.joanfuentes.hintcase.HintCase;
-import com.joanfuentes.hintcaseassets.hintcontentholders.SimpleHintContentHolder;
-import com.joanfuentes.hintcaseassets.shapeanimators.RevealCircleShapeAnimator;
-import com.joanfuentes.hintcaseassets.shapeanimators.UnrevealCircleShapeAnimator;
-import com.joanfuentes.hintcaseassets.shapes.CircularShape;
+//import com.joanfuentes.hintcase.HintCase;
+//import com.joanfuentes.hintcaseassets.hintcontentholders.SimpleHintContentHolder;
+//import com.joanfuentes.hintcaseassets.shapeanimators.RevealCircleShapeAnimator;
+//import com.joanfuentes.hintcaseassets.shapeanimators.UnrevealCircleShapeAnimator;
+//import com.joanfuentes.hintcaseassets.shapes.CircularShape;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
+import cl.jesualex.stooltip.Position;
+import cl.jesualex.stooltip.Tooltip;
 import top.defaults.camera.CameraCallback;
 import top.defaults.camera.CameraView;
 import top.defaults.camera.FaceOpenCameraManager;
 import top.defaults.camera.ImageData;
-import top.defaults.camera.Size;
 import top.defaults.camera.Values;
-import top.defaults.view.TextButton;
-
 public class CameraActivity extends AppCompatActivity {
 
-    private static final int REQUEST_CAMERA_PERMISSION = 100;
-    private static final int[] FLASH_OPTIONS = {
-            Values.FLASH_AUTO,
-            Values.FLASH_OFF,
-            Values.FLASH_ON,
-    };
-    private static final int[] FLASH_ICONS = {
-            R.drawable.ic_flash_auto,
-            R.drawable.ic_flash_off,
-            R.drawable.ic_flash_on,
-    };
-    private static final int[] FLASH_TITLES = {
-            R.string.flash_auto,
-            R.string.flash_off,
-            R.string.flash_on,
-    };
     @BindView(R.id.preview)
     CameraView preview;
-    @BindView(R.id.status)
-    TextView statusTextView;
-    @BindView(R.id.chooseSize)
-    TextButton chooseSizeButton;
-    @BindView(R.id.flash)
-    TextButton flashTextButton;
-    @BindView(R.id.flash_torch)
-    ImageButton flashTorch;
-    @BindView(R.id.switch_mode)
-    TextButton switchButton;
     @BindView(R.id.action)
     ImageView actionButton;
-    @BindView(R.id.flip)
-    ImageButton flipButton;
-    @BindView(R.id.zoomValue)
-    TextView zoomValueTextView;
-    @BindView(R.id.iv_preview)
-    ImageView ivPreView;
     @BindView(R.id.iv_hint)
     ImageView ivHint;
-    @BindView(R.id.iv_hint_action)
-    ImageView ivHintAction;
     @BindView(R.id.rl_main)
-    RelativeLayout mainLayout;
+    ConstraintLayout mainLayout;
     @BindView(R.id.iv_hint_text)
     TextView ivHintText;
-    @BindView(R.id.lv1)
-    RecyclerView listView;
-    @BindView(R.id.tv_save)
-    TextView tvSave;
-    @BindView(R.id.tv_data)
-    TextView tvData;
-    @BindView(R.id.tv_back)
-    TextView tvBack;
-    @BindView(R.id.iv_del)
-    ImageView ivDel;
+    @BindView(R.id.action_btn_text)
+    TextView btnActionText;
     @BindView(R.id.action_text)
     TextView actionText;
-    @BindView(R.id.fl_list)
-    FrameLayout flList;
     @BindView(R.id.ll_tint)
     LinearLayout llTint;
-    @BindView(R.id.ll_preview)
-    LinearLayout llPreview;
-    @BindView(R.id.blurLinearLayout)
-    LinearLayout llblurLayout;
     @BindView(R.id.tv_middle)
     TextView tvMiddle;
-    @BindView(R.id.rg_group)
-    RadioGroup rgGroup;
-    @BindView(R.id.rb_save)
-    RadioButton rbSave;
-    @BindView(R.id.rb_del)
-    RadioButton rbDel;
-    HashMap<Integer, String> mMap = new HashMap<Integer, String>();
-    Runnable picRunnable = new Runnable() {
-        @Override
-        public void run() {
-            Log.d("XXX", "takePicture ");
-            FaceOpenCameraManager.getInstance().takePicture();
-        }
-    };
-    private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>();
-    private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>();
+    @BindView(R.id.ll_header)
+    LinearLayout llHeader;
+    @BindView(R.id.ll_footer)
+    LinearLayout llFooter;
+    @BindView(R.id.btn_hint)
+    Button btnHint;
+    Tooltip tooltip;
+
+    int count = 0;
+
+    private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>() ;
+    private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>() ;
     private ArrayList<Bitmap> selectedData = new ArrayList<Bitmap>();
+    HashMap<Integer, String> mMap =new HashMap<Integer, String>();
     private Handler picHandler = new Handler();
     private boolean isRecordingVideo;
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
     private int currentFlash = Values.FLASH_AUTO;
     private String TAG = "CameraActivity";
     private long CAMERA_CAPTURE_TIME = 100;
@@ -156,11 +98,7 @@ public class CameraActivity extends AppCompatActivity {
     private String camText = "";
     private String selectionType = "";
     private boolean isPreviewZoom = false;
-    private ImagePreviewAdapter adapter;
-    private int shownPosition = 0;
-    private int TOTAL_IMAGES = 15;
-    private int deleteCount = 0;
-    private LinearLayoutManager layoutManager;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -184,88 +122,9 @@ public class CameraActivity extends AppCompatActivity {
         super.onPause();
     }
 
-    @OnClick(R.id.chooseRatio)
-    void chooseRatio() {
-        List<AspectRatioItem> supportedAspectRatios = Commons.wrapItems(FaceOpenCameraManager.getInstance().getSupportedAspectRatios(), AspectRatioItem::new);
-        if (supportedAspectRatios != null) {
-            SimplePickerDialog<AspectRatioItem> dialog = SimplePickerDialog.create(new PickerDialog.ActionListener<AspectRatioItem>() {
-                @Override
-                public void onCancelClick(PickerDialog<AspectRatioItem> dialog) {
-                }
-
-                @Override
-                public void onDoneClick(PickerDialog<AspectRatioItem> dialog) {
-                    AspectRatioItem item = dialog.getSelectedItem(AspectRatioItem.class);
-                    FaceOpenCameraManager.getInstance().setAspectRatio(item.get());
-                }
-            });
-            dialog.setItems(supportedAspectRatios);
-            dialog.setInitialItem(Commons.findEqual(supportedAspectRatios, FaceOpenCameraManager.getInstance().getAspectRatio()));
-            dialog.show(getFragmentManager(), "aspectRatio");
-        }
-    }
-
-    @OnClick(R.id.chooseSize)
-    void chooseSize() {
-        Size selectedSize = null;
-        List<SizeItem> supportedSizes = null;
-        int mode = FaceOpenCameraManager.getInstance().getMode();
-        if (mode == Values.MODE_VIDEO) {
-            Set<Size> videoSizes = FaceOpenCameraManager.getInstance().getSupportedVideoSizes();
-            selectedSize = FaceOpenCameraManager.getInstance().getVideoSize();
-            if (videoSizes != null && videoSizes.size() > 0) {
-                supportedSizes = Commons.wrapItems(videoSizes, SizeItem::new);
-            }
-        } else if (mode == Values.MODE_IMAGE) {
-            Set<Size> imageSizes = FaceOpenCameraManager.getInstance().getSupportedImageSizes();
-            selectedSize = FaceOpenCameraManager.getInstance().getImageSize();
-            if (imageSizes != null && imageSizes.size() > 0) {
-                supportedSizes = Commons.wrapItems(imageSizes, SizeItem::new);
-            }
-        }
-
-        if (supportedSizes != null) {
-            SimplePickerDialog<SizeItem> dialog = SimplePickerDialog.create(new PickerDialog.ActionListener<SizeItem>() {
-                @Override
-                public void onCancelClick(PickerDialog<SizeItem> dialog) {
-                }
-
-                @Override
-                public void onDoneClick(PickerDialog<SizeItem> dialog) {
-                    SizeItem sizeItem = dialog.getSelectedItem(SizeItem.class);
-                    if (mode == Values.MODE_VIDEO) {
-                        FaceOpenCameraManager.getInstance().setVideoSize(sizeItem.get());
-                    } else {
-                        FaceOpenCameraManager.getInstance().setImageSize(sizeItem.get());
-                    }
-                }
-            });
-            dialog.setItems(supportedSizes);
-            dialog.setInitialItem(Commons.findEqual(supportedSizes, selectedSize));
-            dialog.show(getFragmentManager(), "cameraOutputSize");
-        }
-    }
-
-    @OnCheckedChanged(R.id.fillSpace)
-    void onFillSpaceChecked(boolean checked) {
-        preview.setFillSpace(checked);
-    }
-
-    @OnCheckedChanged(R.id.enableZoom)
-    void onEnableZoomChecked(boolean checked) {
-        preview.setPinchToZoom(checked);
-    }
-
-    @OnClick(R.id.flash)
-    void flash() {
-        currentFlash = (currentFlash + 1) % FLASH_OPTIONS.length;
-        flashTextButton.setText(FLASH_TITLES[currentFlash]);
-        flashTextButton.setCompoundDrawablesWithIntrinsicBounds(FLASH_ICONS[currentFlash], 0, 0, 0);
-        FaceOpenCameraManager.getInstance().setFlash(FLASH_OPTIONS[currentFlash]);
-    }
-
     @OnClick(R.id.action)
     void action() {
+        hideClickHint();
         int mode = FaceOpenCameraManager.getInstance().getMode();
         if (mode == Values.MODE_VIDEO) {
             if (isRecordingVideo) {
@@ -277,34 +136,10 @@ public class CameraActivity extends AppCompatActivity {
         } else if (mode == Values.MODE_IMAGE) {
             actionButton.setEnabled(false);
             imageid.clear();
-            actionButton.setEnabled(false);
             actionButton.setVisibility(View.GONE);
+            btnActionText.setVisibility(View.GONE);
             FaceOpenCameraManager.getInstance().takePicture();
         }
-    }
-
-    @OnClick(R.id.flash_torch)
-    void toggleFlashTorch() {
-        int flash = FaceOpenCameraManager.getInstance().getFlash();
-        if (flash == Values.FLASH_TORCH) {
-            FaceOpenCameraManager.getInstance().setFlash(currentFlash);
-            flashTextButton.setEnabled(true);
-            flashTorch.setImageResource(R.drawable.light_off);
-        } else {
-            FaceOpenCameraManager.getInstance().setFlash(Values.FLASH_TORCH);
-            flashTextButton.setEnabled(false);
-            flashTorch.setImageResource(R.drawable.light_on);
-        }
-    }
-
-    @OnClick(R.id.switch_mode)
-    void switchMode() {
-        FaceOpenCameraManager.getInstance().switchMode();
-    }
-
-    @OnClick(R.id.flip)
-    void flip() {
-        FaceOpenCameraManager.getInstance().flipCamera();
     }
 
     @OnClick(R.id.iv_hint)
@@ -312,76 +147,18 @@ public class CameraActivity extends AppCompatActivity {
         // This preview is shown to user how to take picture in particular direction
         if (!isPreviewZoom) {
             isPreviewZoom = true;
-            FrameLayout.LayoutParams buttonLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-            buttonLayoutParams.setMargins(0, 100, 0, 100);
-            ivHint.setLayoutParams(buttonLayoutParams);
-            ivHintText.setVisibility(View.VISIBLE);
-            actionText.setVisibility(View.GONE);
-            buttonLayoutParams.gravity = Gravity.CENTER;
-            llTint.setVisibility(View.VISIBLE);
-            ivHint.getLayoutParams().height = 1200;
-            ivHint.getLayoutParams().width = 1200;
+            zoomIn(1000);
+
         } else {
             isPreviewZoom = false;
-            FrameLayout.LayoutParams buttonLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-            buttonLayoutParams.setMargins(0, 0, 0, 0);
-            buttonLayoutParams.gravity = Gravity.LEFT;
-            ivHint.setLayoutParams(buttonLayoutParams);
-            ivHintText.setVisibility(View.GONE);
-            actionText.setVisibility(View.VISIBLE);
-            llTint.setVisibility(View.GONE);
-            ivHint.getLayoutParams().height = 400;
-            ivHint.getLayoutParams().width = 400;
-        }
-        ivHint.requestLayout();
-    }
-
-    @OnClick(R.id.iv_hint_action)
-    void hintAction() {
-
-    }
-
-    @OnClick(R.id.tv_save)
-    void saveImage() {
-        //selectionCallback.onComplete(selectionType);
-        Iterator myVeryOwnIterator = mMap.keySet().iterator();
-        while (myVeryOwnIterator.hasNext()) {
-            Integer key = (Integer) myVeryOwnIterator.next();
-            String value = (String) mMap.get(key);
-            if (value.equals("S")) {
-                //selectedData.set(key, completeList.get(key));
-            }
-            if (value.equals("D")) {
-                Log.d("RRR", "saveImageD " + key);
-                selectedData.remove(key);
-            }
+            zoomOut(1000);
         }
 
-        Log.d("RRR", "saveImage " + selectedData.size());
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("result", selectionType);
-        setResult(Activity.RESULT_OK, returnIntent);
-        completeList.clear();
-        imageid.clear();
-        returnIntent.putExtra("result", selectionType);
-        setResult(Activity.RESULT_OK, returnIntent);
-        clearData();
-        finish();
     }
 
-    @OnClick(R.id.tv_back)
-    void clickBack() {
-
-        onBackPressed();
-    }
-
-    @OnClick(R.id.iv_del)
-    void delImage() {
-        if (completeList.size() > 0) {
-            adapter.removeAt(shownPosition);
-            layoutManager.scrollToPosition(shownPosition);
-            tvData.setText("" + completeList.size() + " / " + TOTAL_IMAGES);
-        }
+    @OnClick(R.id.btn_hint)
+    void hintClick() {
+        zoomOut(1000);
     }
 
     private void startCamera() {
@@ -396,42 +173,34 @@ public class CameraActivity extends AppCompatActivity {
         configureMode();
         camText = getResources().getString(R.string.face_straight);
         mainLayout.setVisibility(View.VISIBLE);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                showCameraHint();
-            }
-        }, 1000);
+        zoomIn(1000);
+        showHintPreView(camAction);
         FaceOpenCameraManager.getInstance().registerCallback(new CameraCallback() {
             @Override
             public void frameReceived(ImageData imageData) {
                 if (imageData != null) {
-
                     Log.d(TAG, "" + imageData.getImageHeight());
                     Log.d(TAG, "" + imageData.getImageWidth());
                     Log.d(TAG, "" + imageData.getImageFormat());
-
-                    tvMiddle.setVisibility(View.VISIBLE);
-                    tvMiddle.setText("Please wait...");
-
+                    //tvMiddle.setVisibility(View.VISIBLE);
+                    //tvMiddle.setText("Please wait...");
                     imageid.add(imageData.getBitmap());
-
                     if (imageid.size() < 3) {
-
                         completeList.addAll(imageid);
-
-                        // create a singleTon class to store the data to transfer to another activity
                         BitmapDT.getInstance().setBitMaps(completeList);
-
                         Log.d("XXX", "frameReceived " + completeList.size());
                         picHandler.postDelayed(picRunnable, CAMERA_CAPTURE_TIME);
+                        btnActionText.setVisibility(View.VISIBLE);
                     } else {
                         //ivHintText.setText(R.string.face_straight);
                         actionButton.setEnabled(true);
                         actionButton.setVisibility(View.VISIBLE);
-                        tvMiddle.setText("Please click again");
+                        btnActionText.setVisibility(View.GONE);
+                        //tvMiddle.setText("Please click again");
                         showHintPreView(camAction);
                         picHandler.removeCallbacks(picRunnable);
+                        zoomIn(1000);
+
                     }
                     //ivPreView.setVisibility(View.VISIBLE);
                     //ivPreView.setImageBitmap(imageData.getBitmap());
@@ -496,36 +265,9 @@ public class CameraActivity extends AppCompatActivity {
     private void configureMode() {
         if (FaceOpenCameraManager.getInstance().getMode() == Values.MODE_VIDEO) {
             actionButton.setImageResource(R.drawable.record);
-            chooseSizeButton.setText(R.string.video_size);
-            switchButton.setText(R.string.video_mode);
         } else {
             actionButton.setImageResource(R.drawable.ic_camera);
-            chooseSizeButton.setText(R.string.image_size);
-            switchButton.setText(R.string.image_mode);
         }
-    }
-
-    public void showCameraHint() {
-        View parentView = getWindow().getDecorView();
-        SimpleHintContentHolder blockInfo = new SimpleHintContentHolder.Builder(getApplicationContext())
-                .setContentTitle("Click picture")
-                .setContentText("Please click for taking your face picture")
-                .setTitleStyle(R.style.title)
-                .setContentStyle(R.style.content)
-                .build();
-        new HintCase(parentView)
-                .setTarget(findViewById(R.id.action), new CircularShape())
-                .setShapeAnimators(new RevealCircleShapeAnimator(),
-                        new UnrevealCircleShapeAnimator())
-                .setHintBlock(blockInfo)
-                .setOnClosedListener(new HintCase.OnClosedListener() {
-                    @Override
-                    public void onClosed() {
-                        showHintPreView(camAction);
-                    }
-                })
-                .show();
-
     }
 
     private void showHintPreView(String pose) {
@@ -559,7 +301,6 @@ public class CameraActivity extends AppCompatActivity {
             camText = "";
             getGifLoadedUsingGlidePreView(null);
             //setListView();
-
             // setting up data in new Activity
             Log.d("CCC", "start");
             Intent intent = new Intent(CameraActivity.this, PreviewActivity.class);
@@ -569,6 +310,14 @@ public class CameraActivity extends AppCompatActivity {
         }
         actionText.setText(camText);
         ivHintText.setText(camText);
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                zoomOut(1000);
+//
+//
+//            }
+//        }, 8000);
     }
 
     private ImageView getGifLoadedUsingGlidePreView(Integer resource) {
@@ -581,96 +330,13 @@ public class CameraActivity extends AppCompatActivity {
         return animatedImageView;
     }
 
-    /*private void setListView() {
-
-        tvMiddle.setVisibility(View.GONE);
-        llTint.setVisibility(View.GONE);
-        ivHint.setVisibility(View.GONE);
-        tvData.setVisibility(View.VISIBLE);
-        tvSave.setVisibility(View.VISIBLE);
-        tvBack.setVisibility(View.VISIBLE);
-        flList.setVisibility(View.VISIBLE);
-        actionButton.setVisibility(View.GONE);
-
-
-        ArrayList<Bitmap> myList=new ArrayList<Bitmap>();
-        BitmapDT bitmapDT=BitmapDT.getInstance();
-        myList=bitmapDT.getBitmaps();
-
-        adapter = new ImagePreviewAdapter(CameraActivity.this, completeList);
-        listView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(CameraActivity.this, LinearLayoutManager.HORIZONTAL, false);
-        listView.setLayoutManager(layoutManager);
-        listView.setAdapter(adapter);
-        rbSave.setChecked(true);
-        selectedData.addAll(completeList);
-        tvData.setText("" + selectedData.size() + " / " + TOTAL_IMAGES);
-        rgGroup.setOnCheckedChangeListener(null);
-
-        RadioGroup.OnCheckedChangeListener radioListener = new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.rb_save) {
-                    if (deleteCount > 0) {
-                        deleteCount--;
-                    }
-                    mMap.put(shownPosition, "S");
-                    selectedData.add(shownPosition, completeList.get(shownPosition));
-                    Log.d("RRR", "" + selectedData.size());
-                }
-                if (checkedId == R.id.rb_del) {
-                    deleteCount++;
-                    mMap.put(shownPosition, "D");
-                    //selectedData.remove(shownPosition);
-                    Log.d("RRR", "" + selectedData.size());
-                }
-                tvData.setText("" + (TOTAL_IMAGES - deleteCount) + " / " + TOTAL_IMAGES);
-            }
-        };
-
-        listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    shownPosition = getCurrentItem();
-                    Log.d("CCC", "" + shownPosition);
-                    ivPreView.setVisibility(View.VISIBLE);
-                    ivDel.setVisibility(View.VISIBLE);
-                    llPreview.setVisibility(View.VISIBLE);
-                    // need to work on Background the camera things
-                    if (llPreview.getVisibility() == View.VISIBLE) {
-                        llblurLayout.setVisibility(View.VISIBLE);
-                    }
-
-                    ivPreView.setImageBitmap(completeList.get(shownPosition));
-                    Iterator myVeryOwnIterator = mMap.keySet().iterator();
-                    rgGroup.setOnCheckedChangeListener(null);
-                    rbSave.setChecked(true);
-                    try {
-                        while (myVeryOwnIterator.hasNext()) {
-                            Integer key = (Integer) myVeryOwnIterator.next();
-                            String value = (String) mMap.get(key);
-                            if (key == shownPosition && value.equals("S")) {
-                                rbSave.setChecked(true);
-                            }
-                            if (key == shownPosition && value.equals("D")) {
-                                rbDel.setChecked(true);
-                            }
-                        }
-                        rgGroup.setOnCheckedChangeListener(radioListener);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-    }*/
-
-    private int getCurrentItem() {
-        return ((LinearLayoutManager) listView.getLayoutManager())
-                .findFirstVisibleItemPosition() + ((LinearLayoutManager) listView.getLayoutManager()).findLastCompletelyVisibleItemPosition() / 2;
-    }
+    Runnable picRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d("XXX", "takePicture ");
+            FaceOpenCameraManager.getInstance().takePicture();
+        }
+    };
 
     @Override
     protected void onDestroy() {
@@ -678,11 +344,99 @@ public class CameraActivity extends AppCompatActivity {
         clearData();
     }
 
-    private void clearData() {
+    private void clearData(){
         completeList.clear();
         selectedData.clear();
         imageid.clear();
         mMap.clear();
     }
 
+    private void zoomIn(long duration) {
+        ViewGroup.LayoutParams layoutParams = ivHint.getLayoutParams();
+        int width = layoutParams.width;
+        int height = layoutParams.height;
+        layoutParams.width = getResources().getInteger(R.integer.hint_large_size);
+        layoutParams.height = getResources().getInteger(R.integer.hint_large_size);
+        Log.d("XXX", "zoomIn  "+layoutParams.width);
+        Log.d("XXX", "zoomIn  "+layoutParams.height);
+        ivHint.setLayoutParams(layoutParams);
+        ivHint.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+        TransitionSet transitionSet = new TransitionSet();
+        Transition bound = new ChangeBounds();
+        transitionSet.addTransition(bound);
+        Transition changeImageTransform = new ChangeImageTransform();
+        transitionSet.addTransition(changeImageTransform);
+        transitionSet.setDuration(duration);
+        TransitionManager.beginDelayedTransition(mainLayout, transitionSet);
+        hideViews();
+        hideClickHint();
+    }
+
+    private void zoomOut(long duration) {
+        ViewGroup.LayoutParams layoutParams = ivHint.getLayoutParams();
+        int width = layoutParams.width;
+        int height = layoutParams.height;
+        Log.d("XXX", "zoomOut  "+width);
+        Log.d("XXX", "zoomOut  "+height);
+        layoutParams.width = getResources().getInteger(R.integer.hint_small_size);
+        layoutParams.height = getResources().getInteger(R.integer.hint_small_size);
+        ivHint.setLayoutParams(layoutParams);
+        ivHint.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+        TransitionSet transitionSet = new TransitionSet();
+        Transition bound = new ChangeBounds();
+        transitionSet.addTransition(bound);
+        Transition changeImageTransform = new ChangeImageTransform();
+        transitionSet.addTransition(changeImageTransform);
+        transitionSet.setDuration(duration);
+        TransitionManager.beginDelayedTransition(mainLayout, transitionSet);
+        showViews();
+        showClickHint();
+    }
+
+    private void hideViews(){
+        llHeader.setVisibility(View.GONE);
+        llFooter.setVisibility(View.GONE);
+        actionButton.setVisibility(View.GONE);
+        btnHint.setVisibility(View.VISIBLE);
+
+        ivHintText.setVisibility(View.VISIBLE);
+        //actionText.setVisibility(View.GONE);
+        llTint.setVisibility(View.VISIBLE);
+    }
+
+    private void showViews(){
+        llHeader.setVisibility(View.VISIBLE);
+        llFooter.setVisibility(View.VISIBLE);
+        actionButton.setVisibility(View.VISIBLE);
+        btnHint.setVisibility(View.GONE);
+
+        ivHintText.setVisibility(View.GONE);
+        //actionText.setVisibility(View.VISIBLE);
+        llTint.setVisibility(View.GONE);
+    }
+
+    private void showClickHint(){
+        tooltip = Tooltip.on(actionButton)
+                .text("   Please press here before starting   ")
+                .color(getResources().getColor(R.color.white))
+                .border(Color.BLACK, 1f)
+                .clickToHide(true)
+                .corner(50)
+                .borderMargin(20)
+                .border(R.color.black, 10)
+                .textColor(R.color.black)
+                .textGravity(1)
+                .arrowSize(30,30)
+                .position(Position.TOP)
+                .textSize(20)
+                .show();
+    }
+
+    private void hideClickHint(){
+        if(tooltip != null) {
+            tooltip.close();
+        }
+    }
 }
