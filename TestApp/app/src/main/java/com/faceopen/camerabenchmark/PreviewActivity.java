@@ -15,7 +15,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.faceopen.camerabenchmark.adapter.ImagePreviewAdapter;
 import com.faceopen.camerabenchmark.cameraoptions.CameraOpActivity2;
 import com.faceopen.camerabenchmark.data.BitmapDT;
@@ -117,6 +116,7 @@ public class PreviewActivity extends AppCompatActivity {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+
                     shownPosition = getCurrentItem();
                     Log.d("CCC", "" + shownPosition);
                     ivPreView.setImageBitmap(completeList.get(shownPosition));

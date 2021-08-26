@@ -1,4 +1,5 @@
 package com.faceopen.camerabenchmark.adapter;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -44,21 +45,17 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
         selectedData.addAll(allData);
         holder.rgGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.rb_save){
+                if (checkedId == R.id.rb_save) {
                     selectedData.add(position, allData.get(position));
-                    Log.d("RRR", "onCheckedChanged "+selectedData.size());
+                    Log.d("RRR", "onCheckedChanged " + selectedData.size());
                 }
-                if (checkedId == R.id.rb_del){
+                if (checkedId == R.id.rb_del) {
                     selectedData.remove(position);
-                    Log.d("RRR", "onCheckedChanged "+selectedData.size());
+                    Log.d("RRR", "onCheckedChanged " + selectedData.size());
                 }
             }
         });
-        holder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
+        holder.imageView.setOnClickListener(v -> {
         });
     }
 
@@ -78,7 +75,6 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
             this.rgGroup =itemView.findViewById(R.id.rg_group);
             this.rbSave =  itemView.findViewById(R.id.rb_save);
             this.rbDel = itemView.findViewById(R.id.rb_del);
-
         }
     }
 
