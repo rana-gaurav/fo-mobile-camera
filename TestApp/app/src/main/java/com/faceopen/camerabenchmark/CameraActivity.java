@@ -2,6 +2,7 @@ package com.faceopen.camerabenchmark;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -32,6 +33,7 @@ import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
 
 import com.bumptech.glide.Glide;
+import com.faceopen.camerabenchmark.data.BitmapDT;
 //import com.joanfuentes.hintcase.HintCase;
 //import com.joanfuentes.hintcaseassets.hintcontentholders.SimpleHintContentHolder;
 //import com.joanfuentes.hintcaseassets.shapeanimators.RevealCircleShapeAnimator;
@@ -91,7 +93,7 @@ public class CameraActivity extends AppCompatActivity {
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private int currentFlash = Values.FLASH_AUTO;
     private String TAG = "CameraActivity";
-    private long CAMERA_CAPTURE_TIME = 3000;
+    private long CAMERA_CAPTURE_TIME = 100;
     private String camAction = "straight";
     private String camText = "";
     private String selectionType = "";
@@ -185,6 +187,7 @@ public class CameraActivity extends AppCompatActivity {
                     imageid.add(imageData.getBitmap());
                     if (imageid.size() < 3) {
                         completeList.addAll(imageid);
+                        BitmapDT.getInstance().setBitMaps(completeList);
                         Log.d("XXX", "frameReceived " + completeList.size());
                         picHandler.postDelayed(picRunnable, CAMERA_CAPTURE_TIME);
                         btnActionText.setVisibility(View.VISIBLE);
@@ -197,6 +200,7 @@ public class CameraActivity extends AppCompatActivity {
                         showHintPreView(camAction);
                         picHandler.removeCallbacks(picRunnable);
                         zoomIn(1000);
+
                     }
                     //ivPreView.setVisibility(View.VISIBLE);
                     //ivPreView.setImageBitmap(imageData.getBitmap());
@@ -266,29 +270,6 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-//    public void showCameraHint() {
-//        View parentView = getWindow().getDecorView();
-//        SimpleHintContentHolder blockInfo = new SimpleHintContentHolder.Builder(getApplicationContext())
-//                .setContentTitle("Click picture")
-//                .setContentText("Please click for taking your face picture")
-//                .setTitleStyle(R.style.title)
-//                .setContentStyle(R.style.content)
-//                .build();
-//        new HintCase(parentView)
-//                .setTarget(findViewById(R.id.action), new CircularShape())
-//                .setShapeAnimators(new RevealCircleShapeAnimator(),
-//                        new UnrevealCircleShapeAnimator())
-//                .setHintBlock(blockInfo)
-//                .setOnClosedListener(new HintCase.OnClosedListener() {
-//                    @Override
-//                    public void onClosed() {
-//
-//                    }
-//                })
-//                .show();
-//
-//    }
-
     private void showHintPreView(String pose) {
         if (pose.contentEquals("straight")) {
             camAction = "left";
@@ -320,6 +301,12 @@ public class CameraActivity extends AppCompatActivity {
             camText = "";
             getGifLoadedUsingGlidePreView(null);
             //setListView();
+            // setting up data in new Activity
+            Log.d("CCC", "start");
+            Intent intent = new Intent(CameraActivity.this, PreviewActivity.class);
+            startActivity(intent);
+            Log.d("CCC", "end");
+
         }
         actionText.setText(camText);
         ivHintText.setText(camText);
@@ -432,13 +419,19 @@ public class CameraActivity extends AppCompatActivity {
 
     private void showClickHint(){
         tooltip = Tooltip.on(actionButton)
-                .text("\nPlease press here before starting")
-                .color(getResources().getColor(R.color.black))
+                .text("   Please press here before starting   ")
+                .color(getResources().getColor(R.color.white))
                 .border(Color.BLACK, 1f)
                 .clickToHide(true)
-                .corner(5)
+                .corner(50)
+                .borderMargin(20)
+                .border(R.color.black, 10)
+                .textColor(R.color.black)
+                .textGravity(1)
+                .arrowSize(30,30)
                 .position(Position.TOP)
-                .show(3000);
+                .textSize(20)
+                .show();
     }
 
     private void hideClickHint(){

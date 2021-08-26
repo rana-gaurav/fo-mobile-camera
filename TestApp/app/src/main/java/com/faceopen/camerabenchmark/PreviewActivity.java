@@ -54,10 +54,8 @@ public class PreviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
-
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         listView = findViewById(R.id.recyclerView);
         rbSave = findViewById(R.id.rb_save1);
         tvData = findViewById(R.id.tv_data1);
@@ -65,29 +63,20 @@ public class PreviewActivity extends AppCompatActivity {
         ivPreView = findViewById(R.id.iv_preview1);
         tvBack = findViewById(R.id.tv_back1);
         tvSave = findViewById(R.id.tv_save1);
-
         listView.setHasFixedSize(false);
-
-
         tvBack.setOnClickListener(v -> clickBack());
-
         tvSave.setOnClickListener(v -> {
             saveImage();
         });
-
-
         completeList = BitmapDT.getInstance().getBitmaps();
-
         setListView();
     }
 
     private void setListView() {
         adapter = new ImagePreviewAdapter(PreviewActivity.this, completeList);
-
         layoutManager = new LinearLayoutManager(PreviewActivity.this, LinearLayoutManager.HORIZONTAL, false);
         listView.setLayoutManager(layoutManager);
         listView.setAdapter(adapter);
-
         rbSave.setChecked(true);
         selectedData.addAll(completeList);
         tvData.setText("" + selectedData.size() + " / " + TOTAL_IMAGES);
@@ -114,12 +103,14 @@ public class PreviewActivity extends AppCompatActivity {
             }
         };
 
-        //ivPreView.setImageBitmap(completeList.get(0));
+        ivPreView.setImageBitmap(completeList.get(0));
 
-        Glide.with(this)
-                .asBitmap()
-                .load(completeList.get(0))
-                .into(ivPreView);
+
+
+//        Glide.with(this)
+//                .asBitmap()
+//                .load(completeList.get(0))
+//                .into(ivPreView);
 
         listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -128,9 +119,7 @@ public class PreviewActivity extends AppCompatActivity {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     shownPosition = getCurrentItem();
                     Log.d("CCC", "" + shownPosition);
-
                     ivPreView.setImageBitmap(completeList.get(shownPosition));
-
                     Iterator myVeryOwnIterator = mMap.keySet().iterator();
                     rgGroup.setOnCheckedChangeListener(null);
                     rbSave.setChecked(true);
@@ -152,8 +141,6 @@ public class PreviewActivity extends AppCompatActivity {
                 }
             }
         });
-
-
     }
 
     private int getCurrentItem() {
@@ -161,14 +148,11 @@ public class PreviewActivity extends AppCompatActivity {
                 .findFirstVisibleItemPosition() + ((LinearLayoutManager) listView.getLayoutManager()).findLastCompletelyVisibleItemPosition() / 2;
     }
 
-
-    void clickBack() {
-
+    private void clickBack() {
         onBackPressed();
     }
 
-
-    void saveImage() {
+    private void saveImage() {
         //selectionCallback.onComplete(selectionType);
         Iterator myVeryOwnIterator = mMap.keySet().iterator();
         while (myVeryOwnIterator.hasNext()) {
