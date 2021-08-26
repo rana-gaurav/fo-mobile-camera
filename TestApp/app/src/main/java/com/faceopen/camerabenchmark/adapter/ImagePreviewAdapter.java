@@ -1,5 +1,6 @@
 package com.faceopen.camerabenchmark.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -38,8 +39,9 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ImagePreviewAdapter.ViewHolder holder, int position) {
-        holder.imageView.setImageBitmap(allData.get(position));
+    public void onBindViewHolder(@NonNull ImagePreviewAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        holder.imageView.setImageBitmap(allData.get(holder.getAdapterPosition()));
+
         holder.rgGroup.setOnCheckedChangeListener(null);
         holder.rbSave.setChecked(true);
         selectedData.addAll(allData);

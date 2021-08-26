@@ -50,4 +50,7 @@ dependencies {
     implementation 'com.github.luisvasquez:sTooltip:1.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    implementation 'com.ryan.rv_gallery:rv-gallery:1.1.2'
+
 }

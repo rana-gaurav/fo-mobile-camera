@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.faceopen.camerabenchmark.adapter.ImagePreviewAdapter;
 import com.faceopen.camerabenchmark.cameraoptions.CameraOpActivity2;
 import com.faceopen.camerabenchmark.data.BitmapDT;
+import com.ryan.rv_gallery.AnimManager;
+import com.ryan.rv_gallery.GalleryRecyclerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +37,7 @@ public class PreviewActivity extends AppCompatActivity {
     public ArrayList<Bitmap> selectedData = new ArrayList<Bitmap>();
     public LinearLayoutManager layoutManager;
     HashMap<Integer, String> mMap = new HashMap<Integer, String>();
-    RecyclerView listView;
+    GalleryRecyclerView listView;
     RadioGroup rgGroup;
     RadioButton rbSave;
     @BindView(R.id.rb_del1)
@@ -53,6 +55,7 @@ public class PreviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         listView = findViewById(R.id.recyclerView);
@@ -76,6 +79,17 @@ public class PreviewActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(PreviewActivity.this, LinearLayoutManager.HORIZONTAL, false);
         listView.setLayoutManager(layoutManager);
         listView.setAdapter(adapter);
+
+        listView.initFlingSpeed(9000)
+                .initPageParams(0, 180)
+                .setAnimFactor(0.1f)
+                .setAnimType(AnimManager.ANIM_BOTTOM_TO_TOP)
+                .autoPlay(false)
+                .intervalTime(2000)
+                .initPosition(0)
+                .setUp();
+
+
         rbSave.setChecked(true);
         selectedData.addAll(completeList);
         tvData.setText("" + selectedData.size() + " / " + TOTAL_IMAGES);
@@ -103,7 +117,6 @@ public class PreviewActivity extends AppCompatActivity {
         };
 
         ivPreView.setImageBitmap(completeList.get(0));
-
 
 
 //        Glide.with(this)
