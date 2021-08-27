@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="hint_large_size">1200</integer>
-    <integer name="hint_small_size">300</integer>
+    <integer name="hint_small_size">150</integer>
 </resources>

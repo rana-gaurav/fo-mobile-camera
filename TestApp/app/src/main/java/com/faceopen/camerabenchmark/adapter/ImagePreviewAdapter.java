@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -12,6 +14,7 @@ import android.widget.RadioGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.faceopen.camerabenchmark.OnclickListener;
 import com.faceopen.camerabenchmark.R;
 
 import java.util.ArrayList;
@@ -22,9 +25,11 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
     private ArrayList<Bitmap> allData = new ArrayList<Bitmap>();
     private ArrayList<Bitmap> selectedData = new ArrayList<Bitmap>();
     private Activity context;
-    public ImagePreviewAdapter(Activity context, ArrayList<Bitmap> allData) {
+    private OnclickListener clickListener;
+    public ImagePreviewAdapter(Activity context, ArrayList<Bitmap> allData, OnclickListener listener) {
         this.context = context;
         this.allData = allData;
+        this.clickListener = listener;
     }
 
     @NonNull
@@ -33,31 +38,31 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View listItem= layoutInflater.inflate(R.layout.mylist, null);
         ViewHolder viewHolder = new ViewHolder(listItem);
+        viewHolder.rbSave.setChecked(true);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ImagePreviewAdapter.ViewHolder holder, int position) {
         holder.imageView.setImageBitmap(allData.get(position));
-        holder.rgGroup.setOnCheckedChangeListener(null);
-        holder.rbSave.setChecked(true);
-        selectedData.addAll(allData);
-        holder.rgGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.rb_save){
-                    selectedData.add(position, allData.get(position));
-                    Log.d("RRR", "onCheckedChanged "+selectedData.size());
-                }
-                if (checkedId == R.id.rb_del){
-                    selectedData.remove(position);
-                    Log.d("RRR", "onCheckedChanged "+selectedData.size());
-                }
-            }
-        });
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clickListener.onClick(position);
+            }
+        });
 
+       holder.rbSave.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+           @Override
+           public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+               clickListener.onSaveChecked(position, isChecked);
+           }
+       });
+
+        holder.rbDel.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                clickListener.onDeleteChecked(position, isChecked);
             }
         });
     }
@@ -69,16 +74,15 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView imageView;
-        public RadioGroup rgGroup;
+        public RadioGroup radioGroup;
         public RadioButton rbSave;
         public RadioButton rbDel;
         public ViewHolder(View itemView) {
             super(itemView);
             this.imageView =  itemView.findViewById(R.id.iv_image);
-            this.rgGroup =itemView.findViewById(R.id.rg_group);
-            this.rbSave =  itemView.findViewById(R.id.rb_save);
-            this.rbDel = itemView.findViewById(R.id.rb_del);
-
+            this.radioGroup = itemView.findViewById(R.id.rg_group1);
+            this.rbSave = itemView.findViewById(R.id.rb_save1);
+            this.rbDel = itemView.findViewById(R.id.rb_del1);
         }
     }
 
@@ -97,4 +101,8 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
         Log.d("RRR", "getSelectedData "+selectedData.size());
         return selectedData;
     }
+
+   public void setCheckListener(){
+
+   }
 }

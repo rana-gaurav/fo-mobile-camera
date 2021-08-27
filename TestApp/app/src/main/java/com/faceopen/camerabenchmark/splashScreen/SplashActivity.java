@@ -1,19 +1,19 @@
 package com.faceopen.camerabenchmark.splashScreen;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.faceopen.camerabenchmark.R;
 import com.faceopen.camerabenchmark.cameraoptions.CameraOpActivity2;
+import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 
 public class SplashActivity extends AppCompatActivity {
 
     private static int SPLASH_SCREEN_TIME_OUT = 400;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +23,6 @@ public class SplashActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_splash);
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -32,5 +31,10 @@ public class SplashActivity extends AppCompatActivity {
                 finish();
             }
         },SPLASH_SCREEN_TIME_OUT);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
     }
 }
