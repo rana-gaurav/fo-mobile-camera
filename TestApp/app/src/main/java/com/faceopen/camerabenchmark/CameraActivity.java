@@ -1,6 +1,7 @@
 package com.faceopen.camerabenchmark;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -34,14 +35,8 @@ import androidx.transition.TransitionSet;
 
 import com.bumptech.glide.Glide;
 import com.faceopen.camerabenchmark.data.BitmapDT;
-//import com.joanfuentes.hintcase.HintCase;
-//import com.joanfuentes.hintcaseassets.hintcontentholders.SimpleHintContentHolder;
-//import com.joanfuentes.hintcaseassets.shapeanimators.RevealCircleShapeAnimator;
-//import com.joanfuentes.hintcaseassets.shapeanimators.UnrevealCircleShapeAnimator;
-//import com.joanfuentes.hintcaseassets.shapes.CircularShape;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 import butterknife.BindView;
@@ -80,23 +75,18 @@ public class CameraActivity extends AppCompatActivity {
     LinearLayout llFooter;
     @BindView(R.id.btn_hint)
     Button btnHint;
-    Tooltip tooltip;
+    private Tooltip tooltip;
 
-    int count = 0;
 
     private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>() ;
     private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>() ;
-    private ArrayList<Bitmap> selectedData = new ArrayList<Bitmap>();
-    HashMap<Integer, String> mMap =new HashMap<Integer, String>();
     private Handler picHandler = new Handler();
     private boolean isRecordingVideo;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
-    private int currentFlash = Values.FLASH_AUTO;
     private String TAG = "CameraActivity";
-    private long CAMERA_CAPTURE_TIME = 100;
+    private long CAMERA_CAPTURE_TIME = 1000;
     private String camAction = "straight";
     private String camText = "";
-    private String selectionType = "";
     private boolean isPreviewZoom = false;
 
 
@@ -158,6 +148,7 @@ public class CameraActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_hint)
     void hintClick() {
+        isPreviewZoom = false;
         zoomOut(1000);
     }
 
@@ -187,7 +178,6 @@ public class CameraActivity extends AppCompatActivity {
                     imageid.add(imageData.getBitmap());
                     if (imageid.size() < 3) {
                         completeList.addAll(imageid);
-                        BitmapDT.getInstance().setBitMaps(completeList);
                         Log.d("XXX", "frameReceived " + completeList.size());
                         picHandler.postDelayed(picRunnable, CAMERA_CAPTURE_TIME);
                         btnActionText.setVisibility(View.VISIBLE);
@@ -300,24 +290,14 @@ public class CameraActivity extends AppCompatActivity {
             camAction = "";
             camText = "";
             getGifLoadedUsingGlidePreView(null);
-            //setListView();
-            // setting up data in new Activity
             Log.d("CCC", "start");
+            BitmapDT.getInstance().setBitMaps(completeList);
             Intent intent = new Intent(CameraActivity.this, PreviewActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, 1);
             Log.d("CCC", "end");
-
         }
         actionText.setText(camText);
         ivHintText.setText(camText);
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                zoomOut(1000);
-//
-//
-//            }
-//        }, 8000);
     }
 
     private ImageView getGifLoadedUsingGlidePreView(Integer resource) {
@@ -346,9 +326,7 @@ public class CameraActivity extends AppCompatActivity {
 
     private void clearData(){
         completeList.clear();
-        selectedData.clear();
         imageid.clear();
-        mMap.clear();
     }
 
     private void zoomIn(long duration) {
@@ -399,8 +377,9 @@ public class CameraActivity extends AppCompatActivity {
         llHeader.setVisibility(View.GONE);
         llFooter.setVisibility(View.GONE);
         actionButton.setVisibility(View.GONE);
-        btnHint.setVisibility(View.VISIBLE);
-
+        if(!camText.equals("")) {
+            btnHint.setVisibility(View.VISIBLE);
+        }
         ivHintText.setVisibility(View.VISIBLE);
         //actionText.setVisibility(View.GONE);
         llTint.setVisibility(View.VISIBLE);
@@ -418,15 +397,16 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void showClickHint(){
+        hideClickHint();
         tooltip = Tooltip.on(actionButton)
-                .text("   Please press here before starting   ")
-                .color(getResources().getColor(R.color.white))
-                .border(Color.BLACK, 1f)
+                .text("\n   Please press here before starting   \n")
+                .color(getResources().getColor(R.color.button_color))
+                .border(Color.WHITE, 1f)
                 .clickToHide(true)
                 .corner(50)
                 .borderMargin(20)
-                .border(R.color.black, 10)
-                .textColor(R.color.black)
+                .border(getResources().getColor(R.color.white), 5)
+                .textColor(getResources().getColor(R.color.white))
                 .textGravity(1)
                 .arrowSize(30,30)
                 .position(Position.TOP)
@@ -439,4 +419,18 @@ public class CameraActivity extends AppCompatActivity {
             tooltip.close();
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("result", "");
+            setResult(Activity.RESULT_OK, returnIntent);
+            clearData();
+            finish();
+        }
+    }
+
+
 }

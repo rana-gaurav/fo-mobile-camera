@@ -1,6 +1,7 @@
 package com.faceopen.camerabenchmark.cameraoptions;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import butterknife.BindView;
+import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 
 public class CameraOpActivity2 extends AppCompatActivity {
 
@@ -84,5 +86,10 @@ public class CameraOpActivity2 extends AppCompatActivity {
             }
 
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
     }
 }

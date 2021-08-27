@@ -2,57 +2,57 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ImageView
-        android:layout_width="270dp"
+        android:layout_width="400dp"
         android:rotation="270"
-        android:layout_height="wrap_content"
+        android:layout_height="400dp"
         android:id="@+id/iv_image"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 
-    <RadioGroup
-        android:id="@+id/rg_group"
-        android:layout_width="@dimen/item_height"
-        android:layout_height="40dp"
-        android:background="@drawable/pink_out_line"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@id/iv_image"
-        app:layout_constraintTop_toBottomOf="@+id/iv_image">
+        <RadioGroup
+            android:id="@+id/rg_group1"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:layout_marginLeft="10dp"
+            android:visibility="visible"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@+id/iv_image"
+            app:layout_constraintTop_toBottomOf="@+id/iv_image">
 
-        <RadioButton
-            android:id="@+id/rb_save"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="1dp"
-            android:layout_marginTop="1dp"
-            android:layout_marginBottom="1dp"
-            android:layout_weight="1"
-            android:background="@drawable/toggle_widget_background"
-            android:button="@null"
-            android:gravity="center"
-            android:text="Save"
-            android:textColor="@color/green" />
+            <RadioButton
+                android:id="@+id/rb_save1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/toggle_widget_background"
+                android:button="@null"
+                android:gravity="center"
+                android:text="Save"
+                android:textSize="20dp"
+                android:textColor="@color/green"
+                tools:ignore="TouchTargetSizeCheck" />
 
-        <RadioButton
-            android:id="@+id/rb_del"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginTop="1dp"
-            android:layout_marginRight="1dp"
-            android:layout_marginBottom="1dp"
-            android:layout_weight="1"
-            android:background="@drawable/toggle_widget_background"
-            android:button="@null"
-            android:gravity="center"
-            android:text="Delete"
-            android:textColor="@color/red" />
-    </RadioGroup>
-
-
-
+            <RadioButton
+                android:id="@+id/rb_del1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginBottom="1dp"
+                android:layout_weight="1"
+                android:background="@drawable/toggle_widget_background"
+                android:button="@null"
+                android:textSize="20dp"
+                android:gravity="center"
+                android:text="Delete"
+                android:textColor="@color/red"
+                tools:ignore="TouchTargetSizeCheck" />
+        </RadioGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>

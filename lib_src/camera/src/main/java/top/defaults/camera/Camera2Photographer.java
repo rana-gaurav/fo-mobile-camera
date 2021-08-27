@@ -197,41 +197,16 @@ public class Camera2Photographer implements InternalPhotographer {
 
         @Override
         public void onReady() {
-            //createCameraPreviewSession();
             captureStillPicture();
-//            AsyncTask.execute(new Runnable() {
-//                @Override
-//                public voicreateCameraPreviewSessiond run() {
-//                   captureStillPicture();
-//                }
-//            });
         }
 
     };
 
     private final ImageReader.OnImageAvailableListener onImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
-
         @Override
         public void onImageAvailable(ImageReader reader) {
-            Bitmap bitmap = null;
-            Log.d("XXX" , "onImageAvailable");
-            Image image = reader.acquireLatestImage();
-            try {
-                byte[] jpegData = ImageUtil.imageToByteArray(image);
-                bitmap = BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length);
-                ImageData imageData = new ImageData();
-                imageData.setBitmap(bitmap);
-                imageData.setImageFormat(reader.getImageFormat());
-                imageData.setImageWidth(image.getWidth());
-                imageData.setImageHeight(image.getHeight());
-                image.close();
-                onDataListener.onImageDataReceived(imageData);
-                Log.d("XXX" , "onImageAvailableClose");
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
+            new ImageSaveTask(reader).execute();
             //backgroundHandler.post(new ImageSaver(reader.acquireLatestImage(), nextImageAbsolutePath));
         }
 
@@ -861,13 +836,7 @@ public class Camera2Photographer implements InternalPhotographer {
             lockFocus();
         } else {
             captureStillPicture();
-            //createCameraPreviewSession();
-//            AsyncTask.execute(new Runnable() {
-//                @Override
-//                public void run() {
-//                    captureStillPicture();
-//                }
-//            });
+
         }
         preview.shot();
     }
@@ -1039,66 +1008,6 @@ public class Camera2Photographer implements InternalPhotographer {
         }
     }
 
-    private void createCameraPreviewSession() {
-        try {
-            final SurfaceTexture texture = textureView.getSurfaceTexture();
-            assert texture != null;
-
-            // We configure the size of default buffer to be the size of camera preview we want.
-            texture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
-
-            // This is the output Surface we need to start preview.
-            final Surface surface = new Surface(texture);
-
-            // We set up a CaptureRequest.Builder with the output Surface.
-            previewRequestBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            previewRequestBuilder.addTarget(surface);
-
-
-            //imageReader.setOnImageAvailableListener(imageListener, backgroundHandler);
-            previewRequestBuilder.addTarget(imageReader.getSurface());
-
-            // Here, we create a CameraCaptureSession for camera preview.
-            camera.createCaptureSession(
-                    Arrays.asList(imageReader.getSurface(), imageReader.getSurface()),
-                    new CameraCaptureSession.StateCallback() {
-
-                        @Override
-                        public void onConfigured(final CameraCaptureSession cameraCaptureSession) {
-                            // The camera is already closed
-                            if (null == camera) {
-                                return;
-                            }
-
-                            // When the session is ready, we start displaying the preview.
-                            captureSession = cameraCaptureSession;
-                            // Auto focus should be continuous for camera preview.
-                            previewRequestBuilder.set(
-                                    CaptureRequest.CONTROL_AF_MODE,
-                                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-                            // Flash is automatically enabled when necessary.
-                            previewRequestBuilder.set(
-                                    CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
-
-                            // Finally, we start displaying the camera preview.
-//                                previewRequest = previewRequestBuilder.build();
-//                                captureSession.setRepeatingRequest(
-//                                        previewRequest, captureCallback, backgroundHandler);
-                            Log.d("SSS", "createCameraPreviewSession");
-                            callbackHandler.onShotFinished(nextImageAbsolutePath);
-                        }
-
-                        @Override
-                        public void onConfigureFailed(final CameraCaptureSession cameraCaptureSession) {
-                            Log.d("SSS", "onConfigureFailed");
-                        }
-                    },
-                    null);
-        } catch (final CameraAccessException e) {
-            Log.d("SSS", "CameraAccessException");
-        }
-    }
-
     private void unlockFocus() {
         previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
         try {
@@ -1202,11 +1111,40 @@ public class Camera2Photographer implements InternalPhotographer {
         }
     }
 
-    class CaptureTask extends AsyncTask<Void, Void, Void> {
+    private class ImageSaveTask extends AsyncTask<String, Void, ImageData>{
+        private ImageReader mReader;
+
+        public ImageSaveTask(ImageReader reader){
+            mReader = reader;
+        }
+
         @Override
-        protected Void doInBackground(Void... params) {
-            captureStillPicture();
+        protected ImageData doInBackground(String... strings) {
+            Log.d("XXX" , "onImageAvailable");
+            Bitmap bitmap = null;
+            Image image = mReader.acquireLatestImage();
+            try {
+                byte[] jpegData = ImageUtil.imageToByteArray(image);
+                bitmap = BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length);
+                ImageData imageData = new ImageData();
+                imageData.setBitmap(bitmap);
+                imageData.setImageFormat(mReader.getImageFormat());
+                imageData.setImageWidth(image.getWidth());
+                imageData.setImageHeight(image.getHeight());
+                image.close();
+                return imageData;
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            Log.d("XXX" , "onImageAvailableClose");
             return null;
+
+        }
+
+        @Override
+        public void onPostExecute(ImageData result) {
+            super.onPostExecute(result);
+            onDataListener.onImageDataReceived(result);
         }
     }
 }
