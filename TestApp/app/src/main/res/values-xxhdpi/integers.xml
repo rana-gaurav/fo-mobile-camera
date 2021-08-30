@@ -2,4 +2,6 @@
 <resources>
     <integer name="hint_large_size">1100</integer>
     <integer name="hint_small_size">300</integer>
+
+    <integer name="page_width">60</integer>
 </resources>

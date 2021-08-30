@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.faceopen.AppActivity;
 import com.faceopen.camerabenchmark.CameraActivity;
 import com.faceopen.camerabenchmark.R;
 import com.faceopen.camerabenchmark.SharedPreferenceManager;
@@ -23,7 +24,7 @@ import java.util.Set;
 import butterknife.BindView;
 import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 
-public class CameraOpActivity2 extends AppCompatActivity {
+public class CameraOpActivity2 extends AppActivity {
 
     GridView gridView;
     CustomAdapter1 adapter1;
@@ -62,6 +63,7 @@ public class CameraOpActivity2 extends AppCompatActivity {
                 bundle.putString("type", itemValue);
                 intent.putExtras(bundle);
                 startActivityForResult(intent, selectedPos);
+                //overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
             }
         });
     }

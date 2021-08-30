@@ -6,17 +6,30 @@
     android:layout_height="match_parent"
     tools:context=".cameraoptions.CameraOpActivity2">
 
+    <TextView
+        android:id="@+id/tv_head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/head_text"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:padding="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    </TextView>
+
+
     <GridView
         android:id="@+id/gridView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:horizontalSpacing="0dp"
         android:numColumns="2"
         android:verticalSpacing="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_head"
+        tools:layout_editor_absoluteX="0dp">
 
     </GridView>
 
