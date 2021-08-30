@@ -135,6 +135,7 @@ public class Camera2Photographer implements InternalPhotographer {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
             Camera2Photographer.this.camera = camera;
+            Log.d("XXX", "onOpened");
             startCaptureSession();
         }
 
@@ -257,6 +258,8 @@ public class Camera2Photographer implements InternalPhotographer {
 
             @Override
             public void onSurfaceChanged() {
+                //crashing
+                Log.d("XXX", "onSurfaceChanged");
                 startCaptureSession();
             }
         });

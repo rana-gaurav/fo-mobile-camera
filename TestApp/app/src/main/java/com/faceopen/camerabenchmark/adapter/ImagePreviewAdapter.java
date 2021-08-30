@@ -12,22 +12,27 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.faceopen.camerabenchmark.Face;
 import com.faceopen.camerabenchmark.OnclickListener;
 import com.faceopen.camerabenchmark.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 
 public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapter.ViewHolder> {
 
-    private ArrayList<Bitmap> allData = new ArrayList<Bitmap>();
-    private ArrayList<Bitmap> selectedData = new ArrayList<Bitmap>();
-    private Activity context;
+    private ArrayList<Face> allData = new ArrayList<Face>();
+    private ArrayList<Integer> deletedIndex = new ArrayList<Integer>();
+    private Activity mContext;
     private OnclickListener clickListener;
-    public ImagePreviewAdapter(Activity context, ArrayList<Bitmap> allData, OnclickListener listener) {
-        this.context = context;
+    public ImagePreviewAdapter(Activity context, ArrayList<Face> allData, OnclickListener listener) {
+        this.mContext = context;
         this.allData = allData;
         this.clickListener = listener;
     }
@@ -38,13 +43,14 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View listItem= layoutInflater.inflate(R.layout.mylist, null);
         ViewHolder viewHolder = new ViewHolder(listItem);
-        viewHolder.rbSave.setChecked(true);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ImagePreviewAdapter.ViewHolder holder, int position) {
-        holder.imageView.setImageBitmap(allData.get(position));
+        Log.d("KKK",""+position);
+        Face face = allData.get(position);
+        holder.imageView.setImageBitmap(allData.get(position).croppedBitmap);
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,19 +58,31 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
             }
         });
 
-       holder.rbSave.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-           @Override
-           public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-               clickListener.onSaveChecked(position, isChecked);
-           }
-       });
+        holder.radioGroup.setOnCheckedChangeListener(null);
+        if(face.saveEntry){
+            holder.rbSave.setChecked(true);
+        }else{
+            holder.rbDel.setChecked(true);
+        }
 
-        holder.rbDel.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        RadioGroup.OnCheckedChangeListener radioListener = new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                clickListener.onDeleteChecked(position, isChecked);
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                 if (checkedId == R.id.rb_save1){
+                     face.setSaved(true);
+                     clickListener.onSaveChecked(position, true);
+                     deletedIndex.remove(Integer.valueOf(position));
+                     holder.cardView.setCardBackgroundColor(ContextCompat.getColor(mContext,R.color.button_color));
+                 }
+                 if (checkedId == R.id.rb_del1){
+                     face.setSaved(false);
+                     clickListener.onDeleteChecked(position, true);
+                     deletedIndex.add(position);
+                     holder.cardView.setCardBackgroundColor(ContextCompat.getColor(mContext,R.color.red));
+                 }
             }
-        });
+        };
+        holder.radioGroup.setOnCheckedChangeListener(radioListener);
     }
 
     @Override
@@ -77,32 +95,19 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
         public RadioGroup radioGroup;
         public RadioButton rbSave;
         public RadioButton rbDel;
+        public CardView cardView;
         public ViewHolder(View itemView) {
             super(itemView);
             this.imageView =  itemView.findViewById(R.id.iv_image);
             this.radioGroup = itemView.findViewById(R.id.rg_group1);
             this.rbSave = itemView.findViewById(R.id.rb_save1);
             this.rbDel = itemView.findViewById(R.id.rb_del1);
+            this.cardView = itemView.findViewById(R.id.cvLayout);
         }
     }
 
-    public void removeAt(int position) {
-        try{
-            allData.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, allData.size());
-            notifyDataSetChanged();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+    public ArrayList<Integer> getDeletedIndex(){
+        return deletedIndex;
     }
 
-    public ArrayList<Bitmap> getSelectedData(){
-        Log.d("RRR", "getSelectedData "+selectedData.size());
-        return selectedData;
-    }
-
-   public void setCheckListener(){
-
-   }
 }

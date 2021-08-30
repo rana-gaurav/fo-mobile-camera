@@ -34,6 +34,7 @@ import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
 
 import com.bumptech.glide.Glide;
+import com.faceopen.AppActivity;
 import com.faceopen.camerabenchmark.data.BitmapDT;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ import top.defaults.camera.CameraView;
 import top.defaults.camera.FaceOpenCameraManager;
 import top.defaults.camera.ImageData;
 import top.defaults.camera.Values;
-public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends AppActivity {
 
     @BindView(R.id.preview)
     CameraView preview;
@@ -84,7 +85,7 @@ public class CameraActivity extends AppCompatActivity {
     private boolean isRecordingVideo;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private String TAG = "CameraActivity";
-    private long CAMERA_CAPTURE_TIME = 1000;
+    private long CAMERA_CAPTURE_TIME = 100;
     private String camAction = "straight";
     private String camText = "";
     private boolean isPreviewZoom = false;
@@ -143,7 +144,6 @@ public class CameraActivity extends AppCompatActivity {
             isPreviewZoom = false;
             zoomOut(1000);
         }
-
     }
 
     @OnClick(R.id.btn_hint)
@@ -164,8 +164,8 @@ public class CameraActivity extends AppCompatActivity {
         configureMode();
         camText = getResources().getString(R.string.face_straight);
         mainLayout.setVisibility(View.VISIBLE);
-        zoomIn(1000);
-        showHintPreView(camAction);
+        // crash handling
+        picHandler.postDelayed(zoomRunnable, 500);
         FaceOpenCameraManager.getInstance().registerCallback(new CameraCallback() {
             @Override
             public void frameReceived(ImageData imageData) {
@@ -180,7 +180,7 @@ public class CameraActivity extends AppCompatActivity {
                         completeList.addAll(imageid);
                         Log.d("XXX", "frameReceived " + completeList.size());
                         picHandler.postDelayed(picRunnable, CAMERA_CAPTURE_TIME);
-                        btnActionText.setVisibility(View.VISIBLE);
+                        setTextToshow(camText);
                     } else {
                         //ivHintText.setText(R.string.face_straight);
                         actionButton.setEnabled(true);
@@ -294,6 +294,7 @@ public class CameraActivity extends AppCompatActivity {
             BitmapDT.getInstance().setBitMaps(completeList);
             Intent intent = new Intent(CameraActivity.this, PreviewActivity.class);
             startActivityForResult(intent, 1);
+            //overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up);
             Log.d("CCC", "end");
         }
         actionText.setText(camText);
@@ -315,6 +316,15 @@ public class CameraActivity extends AppCompatActivity {
         public void run() {
             Log.d("XXX", "takePicture ");
             FaceOpenCameraManager.getInstance().takePicture();
+        }
+    };
+
+    Runnable zoomRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d("XXX", "startCamera ");
+            zoomIn(1000);
+            showHintPreView(camAction);
         }
     };
 
@@ -383,10 +393,11 @@ public class CameraActivity extends AppCompatActivity {
         ivHintText.setVisibility(View.VISIBLE);
         //actionText.setVisibility(View.GONE);
         llTint.setVisibility(View.VISIBLE);
+        mainLayout.setAlpha(100);
     }
 
     private void showViews(){
-        llHeader.setVisibility(View.VISIBLE);
+        llHeader.setVisibility(View.GONE);
         llFooter.setVisibility(View.VISIBLE);
         actionButton.setVisibility(View.VISIBLE);
         btnHint.setVisibility(View.GONE);
@@ -429,6 +440,28 @@ public class CameraActivity extends AppCompatActivity {
             setResult(Activity.RESULT_OK, returnIntent);
             clearData();
             finish();
+        }
+    }
+
+    private void setTextToshow(String pose){
+        btnActionText.setVisibility(View.VISIBLE);
+        if (pose.contentEquals(getResources().getString(R.string.face_straight))) {
+            btnActionText.setText("keep straight face");
+        }
+        if (pose.contentEquals(getResources().getString(R.string.face_left))) {
+            btnActionText.setText("Keep face to left");
+        }
+        if (pose.contentEquals(getResources().getString(R.string.face_right))) {
+            btnActionText.setText("Keep face to right");
+        }
+        if (pose.contentEquals(getResources().getString(R.string.face_up))) {
+            btnActionText.setText("Keep face up");
+        }
+        if (pose.contentEquals(getResources().getString(R.string.face_down))) {
+            btnActionText.setText("Keep face down");
+        }
+        if (pose.contentEquals("")) {
+            btnActionText.setText("");
         }
     }
 

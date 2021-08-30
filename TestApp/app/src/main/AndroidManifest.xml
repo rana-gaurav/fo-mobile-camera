@@ -31,12 +31,13 @@
 
         <activity
             android:name=".cameraoptions.CameraOpActivity2"
+            android:theme="@style/AppTheme"
             android:exported="true" />
         <activity
             android:name=".splashScreen.SplashActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

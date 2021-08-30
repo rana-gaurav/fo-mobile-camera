@@ -7,11 +7,13 @@ import android.os.Handler;
 import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.faceopen.AppActivity;
 import com.faceopen.camerabenchmark.R;
 import com.faceopen.camerabenchmark.cameraoptions.CameraOpActivity2;
 import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends AppActivity {
 
     private static final int SPLASH_SCREEN_TIME_OUT = 400;
 
@@ -28,6 +30,7 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 Intent intent=new Intent(SplashActivity.this, CameraOpActivity2.class);
                 startActivity(intent);
+                //overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
                 finish();
             }
         },SPLASH_SCREEN_TIME_OUT);
