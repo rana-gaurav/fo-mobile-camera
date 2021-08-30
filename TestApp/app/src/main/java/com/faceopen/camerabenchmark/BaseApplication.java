@@ -17,5 +17,14 @@ public class BaseApplication extends Application {
                                 .setFontAttrId(R.attr.fontPath)
                                 .build()))
                 .build());
+
+        ViewPump.init(ViewPump.builder()
+                .addInterceptor(new CalligraphyInterceptor(
+                        new CalligraphyConfig.Builder()
+                                .setFontAttrId(R.attr.fontPath)
+                                .build()))
+
+                .build());
     }
+
 }

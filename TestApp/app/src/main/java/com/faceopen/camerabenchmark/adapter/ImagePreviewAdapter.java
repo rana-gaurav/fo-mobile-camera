@@ -1,12 +1,11 @@
 package com.faceopen.camerabenchmark.adapter;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -21,8 +20,6 @@ import com.faceopen.camerabenchmark.OnclickListener;
 import com.faceopen.camerabenchmark.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
 
 public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapter.ViewHolder> {
@@ -47,14 +44,15 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ImagePreviewAdapter.ViewHolder holder, int position) {
-        Log.d("KKK",""+position);
+    public void onBindViewHolder(@NonNull ImagePreviewAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        Log.d("KKK", "" + position);
         Face face = allData.get(position);
         holder.imageView.setImageBitmap(allData.get(position).croppedBitmap);
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clickListener.onClick(position);
+                // change postion to getAdapter Position
+                clickListener.onClick(holder.getAdapterPosition());
             }
         });
 
@@ -76,6 +74,7 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
                  }
                  if (checkedId == R.id.rb_del1){
                      face.setSaved(false);
+                     holder.rbSave.setTextColor(R.color.black);
                      clickListener.onDeleteChecked(position, true);
                      deletedIndex.add(position);
                      holder.cardView.setCardBackgroundColor(ContextCompat.getColor(mContext,R.color.red));
