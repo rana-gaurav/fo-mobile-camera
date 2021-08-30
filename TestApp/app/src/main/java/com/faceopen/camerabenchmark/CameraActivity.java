@@ -11,10 +11,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,7 +21,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -39,7 +36,6 @@ import com.faceopen.camerabenchmark.data.BitmapDT;
 
 import java.util.ArrayList;
 
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -50,8 +46,10 @@ import top.defaults.camera.CameraView;
 import top.defaults.camera.FaceOpenCameraManager;
 import top.defaults.camera.ImageData;
 import top.defaults.camera.Values;
+
 public class CameraActivity extends AppActivity {
 
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
     @BindView(R.id.preview)
     CameraView preview;
     @BindView(R.id.action)
@@ -76,20 +74,31 @@ public class CameraActivity extends AppActivity {
     LinearLayout llFooter;
     @BindView(R.id.btn_hint)
     Button btnHint;
+    Runnable picRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d("XXX", "takePicture ");
+            FaceOpenCameraManager.getInstance().takePicture();
+        }
+    };
     private Tooltip tooltip;
-
-
-    private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>() ;
-    private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>() ;
+    private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>();
+    private ArrayList<Bitmap> completeList = new ArrayList<Bitmap>();
     private Handler picHandler = new Handler();
     private boolean isRecordingVideo;
-    private static final int REQUEST_CAMERA_PERMISSION = 100;
     private String TAG = "CameraActivity";
     private long CAMERA_CAPTURE_TIME = 100;
     private String camAction = "straight";
     private String camText = "";
+    Runnable zoomRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d("XXX", "startCamera ");
+            zoomIn(1000);
+            showHintPreView(camAction);
+        }
+    };
     private boolean isPreviewZoom = false;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -311,30 +320,13 @@ public class CameraActivity extends AppActivity {
         return animatedImageView;
     }
 
-    Runnable picRunnable = new Runnable() {
-        @Override
-        public void run() {
-            Log.d("XXX", "takePicture ");
-            FaceOpenCameraManager.getInstance().takePicture();
-        }
-    };
-
-    Runnable zoomRunnable = new Runnable() {
-        @Override
-        public void run() {
-            Log.d("XXX", "startCamera ");
-            zoomIn(1000);
-            showHintPreView(camAction);
-        }
-    };
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         clearData();
     }
 
-    private void clearData(){
+    private void clearData() {
         completeList.clear();
         imageid.clear();
     }
@@ -345,8 +337,8 @@ public class CameraActivity extends AppActivity {
         int height = layoutParams.height;
         layoutParams.width = getResources().getInteger(R.integer.hint_large_size);
         layoutParams.height = getResources().getInteger(R.integer.hint_large_size);
-        Log.d("XXX", "zoomIn  "+layoutParams.width);
-        Log.d("XXX", "zoomIn  "+layoutParams.height);
+        Log.d("XXX", "zoomIn  " + layoutParams.width);
+        Log.d("XXX", "zoomIn  " + layoutParams.height);
         ivHint.setLayoutParams(layoutParams);
         ivHint.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
@@ -365,8 +357,8 @@ public class CameraActivity extends AppActivity {
         ViewGroup.LayoutParams layoutParams = ivHint.getLayoutParams();
         int width = layoutParams.width;
         int height = layoutParams.height;
-        Log.d("XXX", "zoomOut  "+width);
-        Log.d("XXX", "zoomOut  "+height);
+        Log.d("XXX", "zoomOut  " + width);
+        Log.d("XXX", "zoomOut  " + height);
         layoutParams.width = getResources().getInteger(R.integer.hint_small_size);
         layoutParams.height = getResources().getInteger(R.integer.hint_small_size);
         ivHint.setLayoutParams(layoutParams);
@@ -383,11 +375,11 @@ public class CameraActivity extends AppActivity {
         showClickHint();
     }
 
-    private void hideViews(){
+    private void hideViews() {
         llHeader.setVisibility(View.GONE);
         llFooter.setVisibility(View.GONE);
         actionButton.setVisibility(View.GONE);
-        if(!camText.equals("")) {
+        if (!camText.equals("")) {
             btnHint.setVisibility(View.VISIBLE);
         }
         ivHintText.setVisibility(View.VISIBLE);
@@ -396,7 +388,7 @@ public class CameraActivity extends AppActivity {
         mainLayout.setAlpha(100);
     }
 
-    private void showViews(){
+    private void showViews() {
         llHeader.setVisibility(View.GONE);
         llFooter.setVisibility(View.VISIBLE);
         actionButton.setVisibility(View.VISIBLE);
@@ -407,7 +399,7 @@ public class CameraActivity extends AppActivity {
         llTint.setVisibility(View.GONE);
     }
 
-    private void showClickHint(){
+    private void showClickHint() {
         hideClickHint();
         tooltip = Tooltip.on(actionButton)
                 .text("\n   Please press here before starting   \n")
@@ -419,14 +411,14 @@ public class CameraActivity extends AppActivity {
                 .border(getResources().getColor(R.color.white), 5)
                 .textColor(getResources().getColor(R.color.white))
                 .textGravity(1)
-                .arrowSize(30,30)
+                .arrowSize(30, 30)
                 .position(Position.TOP)
                 .textSize(20)
                 .show();
     }
 
-    private void hideClickHint(){
-        if(tooltip != null) {
+    private void hideClickHint() {
+        if (tooltip != null) {
             tooltip.close();
         }
     }
@@ -443,7 +435,7 @@ public class CameraActivity extends AppActivity {
         }
     }
 
-    private void setTextToshow(String pose){
+    private void setTextToshow(String pose) {
         btnActionText.setVisibility(View.VISIBLE);
         if (pose.contentEquals(getResources().getString(R.string.face_straight))) {
             btnActionText.setText("keep straight face");
