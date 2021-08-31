@@ -33,6 +33,7 @@ import androidx.transition.TransitionSet;
 import com.bumptech.glide.Glide;
 import com.faceopen.AppActivity;
 import com.faceopen.camerabenchmark.data.BitmapDT;
+import com.faceopen.camerabenchmark.previewImages.GridPreviewActivity;
 
 import java.util.ArrayList;
 
@@ -301,7 +302,7 @@ public class CameraActivity extends AppActivity {
             getGifLoadedUsingGlidePreView(null);
             Log.d("CCC", "start");
             BitmapDT.getInstance().setBitMaps(completeList);
-            Intent intent = new Intent(CameraActivity.this, PreviewActivity.class);
+            Intent intent = new Intent(CameraActivity.this, GridPreviewActivity.class);
             startActivityForResult(intent, 1);
             //overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up);
             Log.d("CCC", "end");

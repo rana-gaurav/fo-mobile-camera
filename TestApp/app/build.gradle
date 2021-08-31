@@ -35,6 +35,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'org.jetbrains:annotations:15.0'
+    implementation 'com.github.ceryle:FitGridView:v1.0.5'
+    implementation 'com.google.android.material:material:1.4.0'
     testImplementation 'junit:junit:4.+'
     implementation project(path: ':cameramanager')
     implementation project(path: ':camera')
@@ -50,7 +52,6 @@ dependencies {
     implementation 'com.joanfuentes:HintCase:1.0.4'
     implementation 'com.yarolegovich:discrete-scrollview:1.5.1'
     implementation 'com.github.luisvasquez:sTooltip:1.5.1'
-    implementation 'com.ryan.rv_gallery:rv-gallery:1.1.2'
     implementation 'io.github.inflationx:calligraphy3:3.1.1'
     implementation 'io.github.inflationx:viewpump:2.0.3'
     implementation 'com.eightbitlab:supportrenderscriptblur:1.0.2'
