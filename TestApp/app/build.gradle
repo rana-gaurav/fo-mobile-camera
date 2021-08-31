@@ -27,12 +27,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
-    ext {
-        compileSdkVersion = 26
-        buildToolsVersion = '26.0.2'
-
-    }
 }
 
 dependencies {
@@ -40,6 +34,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'org.jetbrains:annotations:15.0'
+    implementation 'com.github.ceryle:FitGridView:v1.0.5'
+    implementation 'com.google.android.material:material:1.4.0'
     testImplementation 'junit:junit:4.+'
     implementation project(path: ':cameramanager')
     implementation project(path: ':camera')
@@ -53,7 +49,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     implementation 'com.github.luisvasquez:sTooltip:1.5.1'
-    implementation 'com.ryan.rv_gallery:rv-gallery:1.1.2'
     implementation 'io.github.inflationx:calligraphy3:3.1.1'
     implementation 'io.github.inflationx:viewpump:2.0.3'
     implementation 'io.alterac.blurkit:blurkit:1.1.0'

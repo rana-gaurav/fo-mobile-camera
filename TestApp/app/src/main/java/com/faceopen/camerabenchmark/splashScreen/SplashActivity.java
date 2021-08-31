@@ -15,7 +15,7 @@ import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 
 public class SplashActivity extends AppActivity {
 
-    private static int SPLASH_SCREEN_TIME_OUT = 400;
+    private static final int SPLASH_SCREEN_TIME_OUT = 400;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
