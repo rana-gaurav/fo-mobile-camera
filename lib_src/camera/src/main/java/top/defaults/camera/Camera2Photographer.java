@@ -135,12 +135,13 @@ public class Camera2Photographer implements InternalPhotographer {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
             Camera2Photographer.this.camera = camera;
-            Log.d("XXX", "onOpened");
+            Log.d("SSS", "onOpened");
             startCaptureSession();
         }
 
         @Override
         public void onDisconnected(@NonNull CameraDevice camera) {
+            Log.d("SSS", "onDisconnected");
             camera.close();
             Camera2Photographer.this.camera = null;
             callbackHandler.onPreviewStopped();
@@ -148,6 +149,7 @@ public class Camera2Photographer implements InternalPhotographer {
 
         @Override
         public void onError(@NonNull CameraDevice camera, int error) {
+            Log.d("SSS", "onError");
             stopPreview();
             callbackHandler.onError(new Error(Error.ERROR_CAMERA));
         }
@@ -157,6 +159,7 @@ public class Camera2Photographer implements InternalPhotographer {
             = new CameraCaptureSession.StateCallback() {
         @Override
         public void onConfigured(@NonNull CameraCaptureSession session) {
+            Log.d("SSS", "onConfigured");
             captureSession = session;
             updateAutoFocus();
             updateFlash();
@@ -168,12 +171,14 @@ public class Camera2Photographer implements InternalPhotographer {
 
         @Override
         public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+            Log.d("SSS", "onConfigureFailed");
             stopPreview();
             callbackHandler.onError(new Error(Error.ERROR_CAMERA));
         }
 
         @Override
         public void onClosed(@NonNull CameraCaptureSession session) {
+            Log.d("SSS", "onClosed");
             if (captureSession != null && captureSession.equals(session)) {
                 captureSession = null;
             }
@@ -184,6 +189,7 @@ public class Camera2Photographer implements InternalPhotographer {
 
         @Override
         public void onPrecaptureRequired() {
+            Log.d("SSS", "onPrecaptureRequired");
 //            previewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
 //                    CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
 //            setState(STATE_PRECAPTURE);
@@ -198,6 +204,7 @@ public class Camera2Photographer implements InternalPhotographer {
 
         @Override
         public void onReady() {
+            Log.d("SSS", "onReady");
             captureStillPicture();
         }
 
@@ -239,6 +246,7 @@ public class Camera2Photographer implements InternalPhotographer {
 
     @Override
     public void initWithViewfinder(Activity activity, CameraView preview) {
+        Log.d("SSS", "initWithViewfinder");
         this.activityContext = activity;
         this.preview = preview;
         this.textureView = preview.getTextureView();
@@ -375,7 +383,7 @@ public class Camera2Photographer implements InternalPhotographer {
             }
 
             // Not found
-            updateCameraInfo(ids[0], cameraManager.getCameraCharacteristics(ids[0]));
+            updateCameraInfo(ids[1], cameraManager.getCameraCharacteristics(ids[1]));
             Integer internal = characteristics.get(CameraCharacteristics.LENS_FACING);
             if (internal == null) {
                 callbackHandler.onError(new Error(Error.ERROR_CAMERA, "Unexpected state: LENS_FACING null."));
@@ -398,6 +406,7 @@ public class Camera2Photographer implements InternalPhotographer {
     }
 
     private void updateCameraInfo(String cameraId, CameraCharacteristics characteristics) {
+
         this.cameraId = cameraId;
         this.characteristics = characteristics;
         Integer orientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
@@ -445,7 +454,7 @@ public class Camera2Photographer implements InternalPhotographer {
             }
             size = imageSize;
             imageReader = ImageReader.newInstance(imageSize.getWidth(), imageSize.getHeight(),
-                    ImageFormat.JPEG,2);
+                    ImageFormat.YUV_420_888,2);
             imageReader.setOnImageAvailableListener(onImageAvailableListener, null);
         } else if (mode == Values.MODE_VIDEO) {
             if (videoSize == null) {
@@ -481,7 +490,6 @@ public class Camera2Photographer implements InternalPhotographer {
             callbackHandler.onError(new Error(Error.ERROR_CAMERA, "Failed to open camera: " + cameraId, e));
         }
     }
-
 
     @Override
     public void restartPreview() {
@@ -981,12 +989,12 @@ public class Camera2Photographer implements InternalPhotographer {
             CaptureRequest.Builder captureRequestBuilder = camera.createCaptureRequest(
                     CameraDevice.TEMPLATE_PREVIEW);
             captureRequestBuilder.addTarget(imageReader.getSurface());
-//            captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-//                    previewRequestBuilder.get(CaptureRequest.CONTROL_AF_MODE));
-//            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,
-//                    Utils.getOrientation(sensorOrientation, currentDeviceRotation));
-//            captureRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, calculateZoomRect());
-//            captureSession.stopRepeating();
+            captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+                    previewRequestBuilder.get(CaptureRequest.CONTROL_AF_MODE));
+            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,
+                    Utils.getOrientation(sensorOrientation, currentDeviceRotation));
+            captureRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, calculateZoomRect());
+            captureSession.stopRepeating();
             captureSession.capture(captureRequestBuilder.build(),
                     new CameraCaptureSession.CaptureCallback() {
                         @Override

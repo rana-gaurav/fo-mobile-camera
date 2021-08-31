@@ -50,6 +50,7 @@ import top.defaults.camera.CameraView;
 import top.defaults.camera.FaceOpenCameraManager;
 import top.defaults.camera.ImageData;
 import top.defaults.camera.Values;
+
 public class CameraActivity extends AppActivity {
 
     @BindView(R.id.preview)
@@ -85,7 +86,7 @@ public class CameraActivity extends AppActivity {
     private boolean isRecordingVideo;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private String TAG = "CameraActivity";
-    private long CAMERA_CAPTURE_TIME = 100;
+    private long CAMERA_CAPTURE_TIME = 1000;
     private String camAction = "straight";
     private String camText = "";
     private boolean isPreviewZoom = false;

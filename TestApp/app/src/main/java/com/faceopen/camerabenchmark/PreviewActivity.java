@@ -91,14 +91,14 @@ public class PreviewActivity extends AppActivity {
         });
         layoutManager = new LinearLayoutManager(PreviewActivity.this, LinearLayoutManager.HORIZONTAL, false);
         listView.setLayoutManager(layoutManager);
+        listView.setHasFixedSize(true);
         listView.setAdapter(adapter);
 
-        listView.initFlingSpeed(9000)
+        listView.initFlingSpeed(1000)
                 .initPageParams(0, getResources().getInteger(R.integer.page_width))
-                .setAnimFactor(0.1f)
+                .setAnimFactor(0.2f)
                 .setAnimType(AnimManager.ANIM_BOTTOM_TO_TOP)
                 .autoPlay(false)
-                .intervalTime(2000)
                 .initPosition(0)
                 .setUp();
     }
