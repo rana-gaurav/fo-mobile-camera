@@ -6,7 +6,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +18,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,7 +29,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -45,6 +50,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cl.jesualex.stooltip.Position;
 import cl.jesualex.stooltip.Tooltip;
+import io.alterac.blurkit.BlurLayout;
 import top.defaults.camera.CameraCallback;
 import top.defaults.camera.CameraView;
 import top.defaults.camera.FaceOpenCameraManager;
@@ -77,6 +83,8 @@ public class CameraActivity extends AppActivity {
     LinearLayout llFooter;
     @BindView(R.id.btn_hint)
     Button btnHint;
+    @BindView(R.id.blurLayout)
+    BlurLayout blurLayout;
     private Tooltip tooltip;
 
 
@@ -86,10 +94,11 @@ public class CameraActivity extends AppActivity {
     private boolean isRecordingVideo;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private String TAG = "CameraActivity";
-    private long CAMERA_CAPTURE_TIME = 1000;
+    private long CAMERA_CAPTURE_TIME = 100;
     private String camAction = "straight";
     private String camText = "";
     private boolean isPreviewZoom = false;
+    private WindowManager window;
 
 
     @Override
@@ -394,7 +403,8 @@ public class CameraActivity extends AppActivity {
         ivHintText.setVisibility(View.VISIBLE);
         //actionText.setVisibility(View.GONE);
         llTint.setVisibility(View.VISIBLE);
-        mainLayout.setAlpha(100);
+        blurLayout.setVisibility(View.VISIBLE);
+        blurLayout.startBlur();
     }
 
     private void showViews(){
@@ -406,6 +416,8 @@ public class CameraActivity extends AppActivity {
         ivHintText.setVisibility(View.GONE);
         //actionText.setVisibility(View.VISIBLE);
         llTint.setVisibility(View.GONE);
+        blurLayout.pauseBlur();
+        blurLayout.setVisibility(View.GONE);
     }
 
     private void showClickHint(){
@@ -465,6 +477,4 @@ public class CameraActivity extends AppActivity {
             btnActionText.setText("");
         }
     }
-
-
 }
