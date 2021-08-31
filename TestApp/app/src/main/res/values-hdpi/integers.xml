@@ -2,5 +2,5 @@
 <resources>
     <integer name="hint_large_size">400</integer>
     <integer name="hint_small_size">100</integer>
-    <integer name="page_width">60</integer>
+    <integer name="page_width">40</integer>
 </resources>

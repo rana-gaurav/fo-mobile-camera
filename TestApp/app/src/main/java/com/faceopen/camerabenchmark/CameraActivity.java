@@ -87,7 +87,7 @@ public class CameraActivity extends AppActivity {
     private Handler picHandler = new Handler();
     private boolean isRecordingVideo;
     private String TAG = "CameraActivity";
-    private long CAMERA_CAPTURE_TIME = 100;
+    private long CAMERA_CAPTURE_TIME = 1000;
     private String camAction = "straight";
     private String camText = "";
     Runnable zoomRunnable = new Runnable() {
