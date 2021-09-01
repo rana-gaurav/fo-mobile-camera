@@ -9,10 +9,21 @@
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:rotation="270"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.faceopen.camerabenchmark.dialog.LabeledSwitch
+        android:id="@+id/labelswitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:on="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

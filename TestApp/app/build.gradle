@@ -36,6 +36,8 @@ dependencies {
     implementation 'org.jetbrains:annotations:15.0'
     implementation 'com.github.ceryle:FitGridView:v1.0.5'
     implementation 'com.google.android.material:material:1.4.0'
+    implementation 'com.ryan.rv_gallery:rv-gallery:1.1.2'
+    implementation 'com.github.angads25:toggle:1.1.0'
     testImplementation 'junit:junit:4.+'
     implementation project(path: ':cameramanager')
     implementation project(path: ':camera')

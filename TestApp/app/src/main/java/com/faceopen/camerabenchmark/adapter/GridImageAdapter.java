@@ -10,12 +10,16 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.faceopen.camerabenchmark.R;
+import com.faceopen.camerabenchmark.dialog.LabeledSwitch;
+import com.github.angads25.toggle.interfaces.OnToggledListener;
+import com.github.angads25.toggle.model.ToggleableView;
 
 import java.util.ArrayList;
 
 public class GridImageAdapter extends BaseAdapter {
     Context context;
     ArrayList<Bitmap> arrayList;
+    LabeledSwitch labeledSwitch;
 
     public GridImageAdapter(Context context, ArrayList<Bitmap> bitmapArrayList) {
         this.context = context;
@@ -44,7 +48,21 @@ public class GridImageAdapter extends BaseAdapter {
         }
         ImageView imageView;
         imageView = convertView.findViewById(R.id.gvImage);
-        Glide.with(context).asBitmap().load(arrayList.get(position)).into(imageView);
+        Glide.with(context)
+                .asBitmap()
+                .load(arrayList.get(position))
+                .into(imageView);
+        labeledSwitch = convertView.findViewById(R.id.labelswitch);
+        labeledSwitch.setOnToggledListener(new OnToggledListener() {
+            @Override
+            public void onSwitched(ToggleableView toggleableView, boolean isOn) {
+                if (isOn) {
+                    // if labeled switch on
+                } else {
+                    // if label switch is off
+                }
+            }
+        });
         return convertView;
     }
 }
