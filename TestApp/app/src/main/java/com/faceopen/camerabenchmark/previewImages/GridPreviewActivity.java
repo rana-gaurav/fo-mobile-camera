@@ -71,8 +71,6 @@ public class GridPreviewActivity extends AppCompatActivity {
         tvBack.setOnClickListener(v -> {
             finish();
         });
-
-
     }
 
     private void showImagePreview(int position) {

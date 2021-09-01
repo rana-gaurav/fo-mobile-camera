@@ -6,6 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.Checkable;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -43,8 +46,17 @@ public class GridImageAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.grid_image, parent, false);
         }
         ImageView imageView;
+        CheckBox cbSave;
         imageView = convertView.findViewById(R.id.gvImage);
+        cbSave = convertView.findViewById(R.id.sw_save);
         Glide.with(context).asBitmap().load(arrayList.get(position)).into(imageView);
+
+        cbSave.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+            }
+        });
         return convertView;
     }
 }
