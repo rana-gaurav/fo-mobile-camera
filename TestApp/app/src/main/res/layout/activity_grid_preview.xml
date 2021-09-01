@@ -21,7 +21,8 @@
         android:listSelector="@android:color/transparent"
         android:padding="2dp"
         android:verticalSpacing="3dp"
-        app:column="3"
+        android:scrollbars="none"
+        app:column="2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:row="4" />

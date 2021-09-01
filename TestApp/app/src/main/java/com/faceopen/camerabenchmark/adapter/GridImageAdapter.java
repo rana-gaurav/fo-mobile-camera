@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.faceopen.camerabenchmark.R;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class GridImageAdapter extends BaseAdapter {
         }
         ImageView imageView;
         imageView = convertView.findViewById(R.id.gvImage);
-        imageView.setImageBitmap(arrayList.get(position));
+        Glide.with(context).asBitmap().load(arrayList.get(position)).into(imageView);
         return convertView;
     }
 }

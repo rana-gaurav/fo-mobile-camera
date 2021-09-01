@@ -21,6 +21,8 @@ import com.faceopen.camerabenchmark.adapter.GridImageAdapter;
 import com.faceopen.camerabenchmark.data.BitmapDT;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class GridPreviewActivity extends AppCompatActivity {
 
@@ -30,6 +32,7 @@ public class GridPreviewActivity extends AppCompatActivity {
     ArrayList<Bitmap> arrayList = new ArrayList<>();
     ImageView ivPreview;
     ImageView ivclose;
+    private HashMap<String, Bitmap> saveMap=new HashMap<String, Bitmap>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,10 @@ public class GridPreviewActivity extends AppCompatActivity {
 
         gridImageAdapter = new GridImageAdapter(this, BitmapDT.getInstance().getBitmaps());
         gridView.setAdapter(gridImageAdapter);
+
+        for(int i = 0; i < BitmapDT.getInstance().getBitmaps().size(); i++){
+            saveMap.put("s", BitmapDT.getInstance().getBitmaps().get(i));
+        }
 
         // on Item Click Listener
         gridView.setOnItemClickListener(
@@ -89,14 +96,28 @@ public class GridPreviewActivity extends AppCompatActivity {
         });
         ((Button) dialog.findViewById(R.id.btnPreviewSave)).setOnClickListener(v -> {
             Log.d("GGG", "Image Saved");
+            saveMap.put("s", BitmapDT.getInstance().getBitmaps().get(position));
             Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
         });
-        ((Button) dialog.findViewById(R.id.btnPreviewDlt)).setOnClickListener(v -> Log.d("GGG", "Image Dlt"));
-
+        ((Button) dialog.findViewById(R.id.btnPreviewDlt)).setOnClickListener(v ->{
+                Log.d("GGG", "Image Dlt");
+                saveMap.put("d", BitmapDT.getInstance().getBitmaps().get(position));
+        });
         ivPreview = dialog.findViewById(R.id.iv_previewImage);
         ivPreview.setImageBitmap(arrayList.get(position));
+    }
 
+    private void getElements(){
+        Iterator myVeryOwnIterator = saveMap.keySet().iterator();
+        while(myVeryOwnIterator.hasNext()) {
+            String key=(String)myVeryOwnIterator.next();
+            Bitmap value=(Bitmap) saveMap.get(key);
+            if(key.equals("s")){
 
+            }else{
+
+            }
+        }
     }
 
 
