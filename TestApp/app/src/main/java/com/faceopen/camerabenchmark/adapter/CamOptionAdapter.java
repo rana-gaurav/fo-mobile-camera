@@ -15,15 +15,16 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.faceopen.camerabenchmark.R;
-import com.faceopen.camerabenchmark.SharedPreferenceManager;
+import com.faceopen.camerabenchmark.data.SharedPreferenceManager;
 
-public class CustomAdapter1 extends ArrayAdapter<String> {
+public class CamOptionAdapter extends ArrayAdapter<String> {
+
+    private String TAG = getClass().getSimpleName();
     private final Context context;
     private final String[] items;
     private final Integer[] logo;
-    private int mPosition;
 
-    public CustomAdapter1(Context context, String[] items, Integer[] logo) {
+    public CamOptionAdapter(Context context, String[] items, Integer[] logo) {
         super(context, R.layout.card_item, items);
         this.context = context;
         this.items = items;
@@ -42,12 +43,12 @@ public class CustomAdapter1 extends ArrayAdapter<String> {
 
         title.setText(items[position]);
         imageView.setImageResource(logo[position]);
-        if ((SharedPreferenceManager.getCategory1(context) && position == 0)
-            || (SharedPreferenceManager.getCategory2(context) && position == 1)
-            || (SharedPreferenceManager.getCategory3(context) && position == 2)
-            || (SharedPreferenceManager.getCategory4(context) && position == 3)
-            || (SharedPreferenceManager.getCategory5(context) && position == 4)){
-            Log.d("YYY", "getCategory1");
+        if ((SharedPreferenceManager.getCategoryA(context) && position == 0)
+            || (SharedPreferenceManager.getCategoryB(context) && position == 1)
+            || (SharedPreferenceManager.getCategoryC(context) && position == 2)
+            || (SharedPreferenceManager.getCategoryD(context) && position == 3)
+            || (SharedPreferenceManager.getCategoryE(context) && position == 4)){
+            Log.d(TAG, "getCategory1");
             checkMark.setVisibility(View.VISIBLE);
             llItem.setBackgroundColor(ContextCompat.getColor(context ,R.color.white));
         }

@@ -4,18 +4,19 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/header_preview_color">
+    android:background="@color/colorPrimary">
 
-    <TextView
+    <ImageView
         android:id="@+id/tv_back1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_gravity="start"
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
         android:gravity="center"
+        android:padding="10dp"
         android:text="Back"
-        android:textColor="@color/white"
+        android:src="@drawable/ic_back"
         android:textSize="22dp"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"

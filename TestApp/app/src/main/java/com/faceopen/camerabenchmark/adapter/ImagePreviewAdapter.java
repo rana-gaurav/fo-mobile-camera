@@ -13,8 +13,8 @@ import android.widget.RadioGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.faceopen.camerabenchmark.Face;
-import com.faceopen.camerabenchmark.OnclickListener;
+import com.faceopen.camerabenchmark.data.Face;
+import com.faceopen.camerabenchmark.previewImages.OnclickListener;
 import com.faceopen.camerabenchmark.R;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapter.ViewHolder> {
 
-    private ArrayList<Face> allData = new ArrayList<Face>();
+    private ArrayList<Face> allData;
     private ArrayList<Integer> deletedIndex = new ArrayList<Integer>();
     private Activity mContext;
     private OnclickListener clickListener;
@@ -66,14 +66,14 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                  if (checkedId == R.id.rb_save1){
                      face.setSaved(true);
-                     clickListener.onSaveChecked(position, true);
+                     //clickListener.onSaveChecked(position, true);
                      deletedIndex.remove(Integer.valueOf(position));
-                     // holder.cardView.setCardBackgroundColor(ContextCompat.getColor(mContext,R.color.button_color));
+                     // holder.cardView.setCardBackgroundColor(ContextCompat.getColor(mContext,R.color.colorPrimary));
                  }
                  if (checkedId == R.id.rb_del1){
                      face.setSaved(false);
                      holder.rbSave.setTextColor(R.color.black);
-                     clickListener.onDeleteChecked(position, true);
+                     //clickListener.onDeleteChecked(position, true);
                      deletedIndex.add(position);
                      //holder.cardView.setCardBackgroundColor(ContextCompat.getColor(mContext,R.color.red));
                  }

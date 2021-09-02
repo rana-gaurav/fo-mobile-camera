@@ -1,38 +1,40 @@
 package com.faceopen.camerabenchmark.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
-import android.widget.Checkable;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.bumptech.glide.Glide;
+import com.faceopen.camerabenchmark.data.Face;
+import com.faceopen.camerabenchmark.previewImages.OnclickListener;
 import com.faceopen.camerabenchmark.R;
 
 import java.util.ArrayList;
 
 public class GridImageAdapter extends BaseAdapter {
-    Context context;
-    ArrayList<Bitmap> arrayList;
+    private Context context;
+    private ArrayList<Face> allData;
+    private OnclickListener clickListener;
 
-    public GridImageAdapter(Context context, ArrayList<Bitmap> bitmapArrayList) {
+    public GridImageAdapter(Context context, ArrayList<Face> faceArrayList, OnclickListener listener) {
         this.context = context;
-        this.arrayList = bitmapArrayList;
+        this.allData = faceArrayList;
+        this.clickListener = listener;
     }
 
     @Override
     public int getCount() {
-        return arrayList.size();
+        return allData.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return arrayList.get(position);
+        return allData.get(position);
     }
 
     @Override
@@ -45,18 +47,49 @@ public class GridImageAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.grid_image, parent, false);
         }
+
         ImageView imageView;
-        CheckBox cbSave;
+        RadioGroup radioGroup;
+        RadioButton rbSave;
+        RadioButton rbDel;
+
         imageView = convertView.findViewById(R.id.gvImage);
-        cbSave = convertView.findViewById(R.id.sw_save);
-        Glide.with(context).asBitmap().load(arrayList.get(position)).into(imageView);
+        radioGroup = convertView.findViewById(R.id.rg_group1);
+        rbSave = convertView.findViewById(R.id.rb_save1);
+        rbDel = convertView.findViewById(R.id.rb_del1);
 
-        cbSave.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        Face face = allData.get(position);
+        Glide.with(context).asBitmap().load(allData.get(position).croppedBitmap).into(imageView);
+
+        radioGroup.setOnCheckedChangeListener(null);
+        if(face.saveEntry){
+            rbSave.setChecked(true);
+            rbSave.setTextColor(context.getResources().getColor(R.color.white));
+            rbDel.setTextColor(context.getResources().getColor(R.color.red));
+        }else{
+            rbDel.setChecked(true);
+            rbDel.setTextColor(context.getResources().getColor(R.color.white));
+            rbSave.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+        }
+
+        RadioGroup.OnCheckedChangeListener radioListener = new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.rb_save1){
+                    face.setSaved(true);
+                    rbSave.setTextColor(context.getResources().getColor(R.color.white));
+                    rbDel.setTextColor(context.getResources().getColor(R.color.red));
+                    clickListener.onSaveChecked(position, true, face);
+                }
+                if (checkedId == R.id.rb_del1){
+                    face.setSaved(false);
+                    rbDel.setTextColor(context.getResources().getColor(R.color.white));
+                    rbSave.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+                    clickListener.onDeleteChecked(position, true, face);
+                }
             }
-        });
+        };
+        radioGroup.setOnCheckedChangeListener(radioListener);
         return convertView;
     }
 }

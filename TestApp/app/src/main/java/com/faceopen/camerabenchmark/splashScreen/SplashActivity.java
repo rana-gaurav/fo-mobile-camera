@@ -6,16 +6,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.WindowManager;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.faceopen.AppActivity;
+import com.faceopen.camerabenchmark.base.AppActivity;
 import com.faceopen.camerabenchmark.R;
-import com.faceopen.camerabenchmark.cameraoptions.CameraOpActivity2;
+import com.faceopen.camerabenchmark.cameraoptions.CamOptionActivity;
+import com.faceopen.camerabenchmark.data.AppConstants;
+
 import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 
 public class SplashActivity extends AppActivity {
 
-    private static final int SPLASH_SCREEN_TIME_OUT = 400;
+    private static final int SPLASH_SCREEN_TIME_OUT = AppConstants.SPLASH_TIME_OUT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +28,7 @@ public class SplashActivity extends AppActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent=new Intent(SplashActivity.this, CameraOpActivity2.class);
+                Intent intent=new Intent(SplashActivity.this, CamOptionActivity.class);
                 startActivity(intent);
                 //overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
                 finish();

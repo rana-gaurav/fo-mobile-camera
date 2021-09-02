@@ -1,10 +1,12 @@
-package com.faceopen.camerabenchmark;
+package com.faceopen.camerabenchmark.misc;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import android.os.Bundle;
 import android.widget.Button;
+
+import com.faceopen.camerabenchmark.R;
 
 
 public class TestActivity extends AppCompatActivity {

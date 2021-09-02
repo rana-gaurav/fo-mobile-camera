@@ -1,4 +1,4 @@
-package com.faceopen.camerabenchmark;
+package com.faceopen.camerabenchmark.data;
 
 import android.graphics.Bitmap;
 import android.graphics.Point;

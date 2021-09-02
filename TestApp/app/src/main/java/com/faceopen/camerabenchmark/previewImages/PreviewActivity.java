@@ -1,30 +1,26 @@
-package com.faceopen.camerabenchmark;
+package com.faceopen.camerabenchmark.previewImages;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.faceopen.AppActivity;
+import com.faceopen.camerabenchmark.R;
+import com.faceopen.camerabenchmark.base.AppActivity;
 import com.faceopen.camerabenchmark.adapter.ImagePreviewAdapter;
-import com.faceopen.camerabenchmark.cameraoptions.CameraOpActivity2;
+import com.faceopen.camerabenchmark.cameraoptions.CamOptionActivity;
 import com.faceopen.camerabenchmark.data.BitmapDT;
+import com.faceopen.camerabenchmark.data.Face;
 import com.ryan.rv_gallery.AnimManager;
 import com.ryan.rv_gallery.GalleryRecyclerView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
 import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 
@@ -39,7 +35,7 @@ public class PreviewActivity extends AppActivity {
     public LinearLayoutManager layoutManager;
     private GalleryRecyclerView listView;
     private TextView tvData;
-    private TextView tvBack;
+    private ImageView tvBack;
     private TextView tvSave;
     private int deleteCount = 0;
 
@@ -76,7 +72,7 @@ public class PreviewActivity extends AppActivity {
             }
 
             @Override
-            public void onSaveChecked(int position, boolean state) {
+            public void onSaveChecked(int position, boolean state, Face face) {
                 if (deleteCount > 0) {
                     deleteCount--;
                 }
@@ -84,7 +80,7 @@ public class PreviewActivity extends AppActivity {
             }
 
             @Override
-            public void onDeleteChecked(int position, boolean state) {
+            public void onDeleteChecked(int position, boolean state, Face face) {
                 deleteCount++;
                 tvData.setText("" + (TOTAL_IMAGES - deleteCount) + " / " + TOTAL_IMAGES);
             }
@@ -104,7 +100,7 @@ public class PreviewActivity extends AppActivity {
     }
 
     private void clickBack() {
-        Intent intent = new Intent(getApplicationContext(), CameraOpActivity2.class);
+        Intent intent = new Intent(getApplicationContext(), CamOptionActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }

@@ -1,6 +1,8 @@
-package com.faceopen.camerabenchmark;
+package com.faceopen.camerabenchmark.base;
 
 import android.app.Application;
+
+import com.faceopen.camerabenchmark.R;
 
 import io.alterac.blurkit.BlurKit;
 import io.github.inflationx.calligraphy3.CalligraphyConfig;
@@ -17,14 +19,6 @@ public class BaseApplication extends Application {
                         new CalligraphyConfig.Builder()
                                 .setFontAttrId(R.attr.fontPath)
                                 .build()))
-                .build());
-
-        ViewPump.init(ViewPump.builder()
-                .addInterceptor(new CalligraphyInterceptor(
-                        new CalligraphyConfig.Builder()
-                                .setFontAttrId(R.attr.fontPath)
-                                .build()))
-
                 .build());
     }
 

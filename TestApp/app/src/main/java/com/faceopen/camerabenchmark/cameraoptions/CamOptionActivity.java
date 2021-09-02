@@ -10,13 +10,11 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.faceopen.AppActivity;
-import com.faceopen.camerabenchmark.CameraActivity;
+import com.faceopen.camerabenchmark.base.AppActivity;
+import com.faceopen.camerabenchmark.camera.CameraActivity;
 import com.faceopen.camerabenchmark.R;
-import com.faceopen.camerabenchmark.SharedPreferenceManager;
-import com.faceopen.camerabenchmark.adapter.CustomAdapter1;
+import com.faceopen.camerabenchmark.data.SharedPreferenceManager;
+import com.faceopen.camerabenchmark.adapter.CamOptionAdapter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,14 +22,15 @@ import java.util.Set;
 import butterknife.BindView;
 import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 
-public class CameraOpActivity2 extends AppActivity {
+public class CamOptionActivity extends AppActivity {
 
-    GridView gridView;
-    CustomAdapter1 adapter1;
-    int selectedPos = 0;
-    Set<String> listSelect = new HashSet<String>();
-    String[] items = {"Under Light", "Under SunLight", "Left Side Light", "Right Side", "Light on Straight Face"};
-    Integer[] logo = {
+    private String TAG = this.getClass().getSimpleName();
+    private GridView gridView;
+    private CamOptionAdapter adapter1;
+    private int selectedPos = 0;
+    private Set<String> listSelect = new HashSet<String>();
+    private String[] items = {"Under Light", "Under SunLight", "Left Side Light", "Right Side", "Light on Straight Face"};
+    private Integer[] logo = {
 
             R.drawable.ic_android,
             R.drawable.ic_android,
@@ -45,9 +44,9 @@ public class CameraOpActivity2 extends AppActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera_op2);
+        setContentView(R.layout.activity_camera_op);
         gridView = findViewById(R.id.gridView);
-        adapter1 = new CustomAdapter1(this, items, logo);
+        adapter1 = new CamOptionAdapter(this, items, logo);
         gridView.setAdapter(adapter1);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -58,7 +57,7 @@ public class CameraOpActivity2 extends AppActivity {
                 String itemValue = (String) gridView.getItemAtPosition(position);
                 Log.d("item","Item is :"+itemValue);
                 selectedPos = position;
-                Intent intent = new Intent(CameraOpActivity2.this, CameraActivity.class);
+                Intent intent = new Intent(CamOptionActivity.this, CameraActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("type", itemValue);
                 intent.putExtras(bundle);
@@ -73,17 +72,17 @@ public class CameraOpActivity2 extends AppActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == selectedPos) {
             if (resultCode == Activity.RESULT_OK) {
-                Log.d("YYY", "onActivityResult " + selectedPos);
+                Log.d(TAG, "onActivityResult " + selectedPos);
                 if (selectedPos == 0)
-                    SharedPreferenceManager.setCategory1(this, true);
+                    SharedPreferenceManager.setCategoryA(this, true);
                 if (selectedPos == 1)
-                    SharedPreferenceManager.setCategory2(this, true);
+                    SharedPreferenceManager.setCategoryB(this, true);
                 if (selectedPos == 2)
-                    SharedPreferenceManager.setCategory3(this, true);
+                    SharedPreferenceManager.setCategoryC(this, true);
                 if (selectedPos == 3)
-                    SharedPreferenceManager.setCategory4(this, true);
+                    SharedPreferenceManager.setCategoryD(this, true);
                 if (selectedPos == 4)
-                    SharedPreferenceManager.setCategory5(this, true);
+                    SharedPreferenceManager.setCategoryE(this, true);
                 adapter1.refresh();
             }
 

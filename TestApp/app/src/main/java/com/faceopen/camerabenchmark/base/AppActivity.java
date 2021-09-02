@@ -1,4 +1,4 @@
-package com.faceopen;
+package com.faceopen.camerabenchmark.base;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 
 public class AppActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
