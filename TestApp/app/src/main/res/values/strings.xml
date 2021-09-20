@@ -27,7 +27,6 @@
     <string name="face_up">Please move face\n up as shown</string>
     <string name="face_down">Please move face\n down as shown</string>
     <string name="click_hint">Please press the click button</string>
-
     <string name="head_text">Please select the Lightening condition</string>
 
 </resources>

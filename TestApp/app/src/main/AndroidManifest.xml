@@ -33,6 +33,13 @@
         </activity>
 
         <activity
+            android:name=".cameraoptions.CamOptionActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
+        </activity>
+
+        <activity
             android:name=".camera.CameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
@@ -48,13 +55,6 @@
         <activity
             android:name=".previewImages.PreviewActivity"
             android:screenOrientation="portrait">
-        </activity>
-
-        <activity
-            android:name=".cameraoptions.CamOptionActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
         </activity>
 
         <provider

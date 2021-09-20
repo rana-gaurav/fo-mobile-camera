@@ -63,7 +63,7 @@ public class GridPreviewActivity extends AppActivity {
         tvData = findViewById(R.id.tv_data1);
         ivclose = findViewById(R.id.iv_close);
 
-        gridImageAdapter = new GridImageAdapter(this, completeList, new OnclickListener() {
+        gridImageAdapter = new GridImageAdapter(this, completeList, new OnImageClickListener() {
             @Override
             public void onClick(int position) {
 

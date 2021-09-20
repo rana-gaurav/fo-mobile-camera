@@ -11,7 +11,7 @@ import android.widget.RadioGroup;
 
 import com.bumptech.glide.Glide;
 import com.faceopen.camerabenchmark.data.Face;
-import com.faceopen.camerabenchmark.previewImages.OnclickListener;
+import com.faceopen.camerabenchmark.previewImages.OnImageClickListener;
 import com.faceopen.camerabenchmark.R;
 
 import java.util.ArrayList;
@@ -19,9 +19,9 @@ import java.util.ArrayList;
 public class GridImageAdapter extends BaseAdapter {
     private Context context;
     private ArrayList<Face> allData;
-    private OnclickListener clickListener;
+    private OnImageClickListener clickListener;
 
-    public GridImageAdapter(Context context, ArrayList<Face> faceArrayList, OnclickListener listener) {
+    public GridImageAdapter(Context context, ArrayList<Face> faceArrayList, OnImageClickListener listener) {
         this.context = context;
         this.allData = faceArrayList;
         this.clickListener = listener;

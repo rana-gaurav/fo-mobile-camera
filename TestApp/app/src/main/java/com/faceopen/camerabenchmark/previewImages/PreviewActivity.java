@@ -65,7 +65,7 @@ public class PreviewActivity extends AppActivity {
 
     private void setListView() {
         tvData.setText("" + (TOTAL_IMAGES) + " / " + TOTAL_IMAGES);
-        adapter = new ImagePreviewAdapter(PreviewActivity.this, completeList, new OnclickListener() {
+        adapter = new ImagePreviewAdapter(PreviewActivity.this, completeList, new OnImageClickListener() {
             @Override
             public void onClick(int position) {
 

@@ -6,7 +6,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -38,7 +44,10 @@ import com.faceopen.camerabenchmark.base.AppActivity;
 import com.faceopen.camerabenchmark.data.AppConstants;
 import com.faceopen.camerabenchmark.data.BitmapDT;
 import com.faceopen.camerabenchmark.previewImages.GridPreviewActivity;
+import com.faceopen.faceanalyzer.FAExceptions;
+import com.faceopen.faceanalyzer.FaceAnalyzer;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -83,6 +92,7 @@ public class CameraActivity extends AppActivity {
     @BindView(R.id.blurLayout)
     BlurLayout blurLayout;
     private Tooltip tooltip;
+    boolean start = false;
 
 
     private ArrayList<Bitmap> imageid = new ArrayList<Bitmap>();
@@ -97,6 +107,7 @@ public class CameraActivity extends AppActivity {
     private String camText = "";
     private boolean isPreviewZoom = false;
     private String TAG = this.getClass().getSimpleName();
+    FaceAnalyzer faceAnalyzer;
 
 
     @Override
@@ -182,9 +193,22 @@ public class CameraActivity extends AppActivity {
                     Log.d(TAG, "" + imageData.getImageHeight());
                     Log.d(TAG, "" + imageData.getImageWidth());
                     Log.d(TAG, "" + imageData.getImageFormat());
+
                     //tvMiddle.setVisibility(View.VISIBLE);
                     //tvMiddle.setText("Please wait...");
                     imageid.add(imageData.getBitmap());
+
+                    if(!start){
+                        start = true;
+                        try {
+                            faceanalyzerInit();
+                            faceAnalyzer.startFAProcess();
+                            faceAnalyzer.faceAnalysis(imageData.getByte(), null, imageData.getImageWidth(), imageData.getImageHeight());
+                        } catch (FAExceptions faExceptions) {
+                            faExceptions.printStackTrace();
+                        }
+                    }
+
                     if (imageid.size() < 3) {
                         completeList.addAll(imageid);
                         Log.d(TAG, "frameReceived " + completeList.size());
@@ -201,6 +225,7 @@ public class CameraActivity extends AppActivity {
                         zoomIn(ANIMATION_DURATION);
 
                     }
+
                     //ivPreView.setVisibility(View.VISIBLE);
                     //ivPreView.setImageBitmap(imageData.getBitmap());
                 }
@@ -474,5 +499,59 @@ public class CameraActivity extends AppActivity {
         if (pose.contentEquals("")) {
             btnActionText.setText("");
         }
+    }
+
+
+    private void faceanalyzerInit() {
+        try {
+            faceAnalyzer = FaceAnalyzer.getInstance();
+            faceAnalyzer.init(this, null, null);
+            //faceAnalyzer.addResultListener(mFAResultSetListener);
+            faceAnalyzer.setDebug(true);
+            faceAnalyzer.setPreProcessing(true);
+            faceAnalyzer.setLAFlag(false);
+            faceAnalyzer.setApiFlag(false);
+            faceAnalyzer.setMinFaceValue(120);
+            faceAnalyzer.setOrganizationId("5f4fe5571fa50176c868fec9");
+            faceAnalyzer.setDeviceId("5fb833188c2300230935123b");
+        } catch (FAExceptions faExceptions) {
+            faExceptions.printStackTrace();
+        }
+    }
+
+
+    private byte[] rgbValuesFromBitmap(Bitmap bitmap) {
+        ColorMatrix colorMatrix = new ColorMatrix();
+        ColorFilter colorFilter = new ColorMatrixColorFilter(
+                colorMatrix);
+        Bitmap argbBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(argbBitmap);
+
+        Paint paint = new Paint();
+
+        paint.setColorFilter(colorFilter);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int componentsPerPixel = 3;
+        int totalPixels = width * height;
+        int totalBytes = totalPixels * componentsPerPixel;
+
+        byte[] rgbValues = new byte[totalBytes];
+        @ColorInt int[] argbPixels = new int[totalPixels];
+        argbBitmap.getPixels(argbPixels, 0, width, 0, 0, width, height);
+        for (int i = 0; i < totalPixels; i++) {
+            @ColorInt int argbPixel = argbPixels[i];
+            int red = Color.red(argbPixel);
+            int green = Color.green(argbPixel);
+            int blue = Color.blue(argbPixel);
+            rgbValues[i * componentsPerPixel + 0] = (byte) red;
+            rgbValues[i * componentsPerPixel + 1] = (byte) green;
+            rgbValues[i * componentsPerPixel + 2] = (byte) blue;
+        }
+
+        return rgbValues;
     }
 }

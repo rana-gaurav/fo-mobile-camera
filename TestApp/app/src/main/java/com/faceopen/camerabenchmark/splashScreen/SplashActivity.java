@@ -30,7 +30,6 @@ public class SplashActivity extends AppActivity {
             public void run() {
                 Intent intent=new Intent(SplashActivity.this, CamOptionActivity.class);
                 startActivity(intent);
-                //overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
                 finish();
             }
         },SPLASH_SCREEN_TIME_OUT);

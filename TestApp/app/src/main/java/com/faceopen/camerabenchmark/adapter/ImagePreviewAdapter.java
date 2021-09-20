@@ -14,7 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.faceopen.camerabenchmark.data.Face;
-import com.faceopen.camerabenchmark.previewImages.OnclickListener;
+import com.faceopen.camerabenchmark.previewImages.OnImageClickListener;
 import com.faceopen.camerabenchmark.R;
 
 import java.util.ArrayList;
@@ -25,8 +25,8 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
     private ArrayList<Face> allData;
     private ArrayList<Integer> deletedIndex = new ArrayList<Integer>();
     private Activity mContext;
-    private OnclickListener clickListener;
-    public ImagePreviewAdapter(Activity context, ArrayList<Face> allData, OnclickListener listener) {
+    private OnImageClickListener clickListener;
+    public ImagePreviewAdapter(Activity context, ArrayList<Face> allData, OnImageClickListener listener) {
         this.mContext = context;
         this.allData = allData;
         this.clickListener = listener;
