@@ -1139,6 +1139,7 @@ public class Camera2Photographer implements InternalPhotographer {
                 bitmap = BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length);
                 ImageData imageData = new ImageData();
                 imageData.setBitmap(bitmap);
+                imageData.setByte(jpegData);
                 imageData.setImageFormat(mReader.getImageFormat());
                 imageData.setImageWidth(image.getWidth());
                 imageData.setImageHeight(image.getHeight());

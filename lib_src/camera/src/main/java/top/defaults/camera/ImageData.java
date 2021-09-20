@@ -7,6 +7,7 @@ public class ImageData {
     private int imageHeight;
     private int imageWidth;
     private int imageFormat;
+    private byte[] imageByte;
 
     public Bitmap getBitmap() {
         return bitmap;
@@ -14,6 +15,14 @@ public class ImageData {
 
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
+    }
+
+    public byte[] getByte() {
+        return imageByte;
+    }
+
+    public void setByte(byte[] imageByte) {
+        this.imageByte = imageByte;
     }
 
     public int getImageHeight() {

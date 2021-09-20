@@ -8,7 +8,7 @@ include ':camera'
 project(':camera').projectDir = new File('../../fo-mobile-camera/lib_src/camera')
 
 include ':faceanalyzer'
-project(':faceanalyzer').projectDir = new File('../../fo-faceanalyzer-core/lib_src/androidService')
+project(':faceanalyzer').projectDir = new File('../../fo-faceanalyzer-core/lib_src/faceAnalyzer')
 
 include ':faceopennetwork'
 project(':faceopennetwork').projectDir = new File('../../fo-mobile-android-network-manager/lib_src/faceopennetwork')

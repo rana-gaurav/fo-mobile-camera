@@ -10,7 +10,7 @@
         <option name="gradleJvm" value="11" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$/../../fo-faceanalyzer-core/lib_src/androidService" />
+            <option value="$PROJECT_DIR$/../../fo-faceanalyzer-core/lib_src/faceanalyzer" />
             <option value="$PROJECT_DIR$/../../fo-mobile-android-intelrealsense/lib_src/librealsense" />
             <option value="$PROJECT_DIR$/../../fo-mobile-android-linearactuator/lib_src/faceopenlinearactuator" />
             <option value="$PROJECT_DIR$/../../fo-mobile-android-network-manager/lib_src/faceopennetwork" />
