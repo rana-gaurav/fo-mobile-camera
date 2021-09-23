@@ -203,7 +203,7 @@ public class CameraActivity extends AppActivity {
                         try {
                             faceanalyzerInit();
                             faceAnalyzer.startFAProcess();
-                            faceAnalyzer.faceAnalysis(rgbValuesFromBitmap(imageData.getBitmap()), null, imageData.getImageWidth(), imageData.getImageHeight());
+                            faceAnalyzer.faceAnalysisA(rgbValuesFromBitmap(imageData.getBitmap()), null, imageData.getImageWidth(), imageData.getImageHeight());
                             Log.d("faceAnalysis", "");
                         } catch (FAExceptions faExceptions) {
                             faExceptions.printStackTrace();
